@@ -3,3 +3,12 @@
   min-height: 100vh;
 }
 
+.logingroup {
+  padding-top: 2px;
+  padding-bottom: 2px;
+}
+
+.sessiontable {
+  word-wrap: break-word;
+  word-break: break-all;
+}
