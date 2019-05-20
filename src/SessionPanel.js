@@ -48,7 +48,7 @@ class SessionPanel extends Component {
     console.log('Logging in user: ' + username)
     // Do something to validate the user/pass combination
     try {
-      let user = await axios.post('https://pwd-racetrack.onehc.net/user/login',
+      let user = await axios.post('https://pwd-racetrack/user/login',
         {
           'name': username,
           'password': password
