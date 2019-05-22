@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
-import {Tab, Tabs} from '@blueprintjs/core'
+import {Navbar, Tab, Tabs, Button, Alignment, Intent} from '@blueprintjs/core'
+import {Flex, Box} from 'reflexbox'
 import CarPanel from './CarPanel'
 import RacePanel from './RacePanel'
 import SettingsPanel from './SettingsPanel'
@@ -27,13 +28,28 @@ class Tablist extends Component {
 
   render () {
     return (
-      <Tabs id='tablist' animate onChange={this.handleTabChange} selectedTabId={this.state.tabId}>
-        <Tab id='cars' disabled title='Cars' panel={<CarPanel />} />
-        <Tab id='races' disabled title='Races' panel={<RacePanel />} />
-        <Tab id='settings' disabled title='Settings' panel={<SettingsPanel />} />
-        <Tab id='users' disabled title='Users' panel={<UserPanel />} />
-        <Tab id='session' title='Session' panel={<SessionPanel user={this.state.user} />} />
-      </Tabs>
+      <React.Fragment>
+      <Navbar>
+        <Navbar.Group>
+          <Navbar.Heading>
+            pwd-racemanager
+          </Navbar.Heading>
+          <Navbar.Divider />
+          <Button id='car' onClick={this.handlePanelChange} icon='drive-time' text='Cars' />
+          <Button id='race' onClick={this.handlePanelChange} icon='horizontal-bar-chart' text='Race' />
+          <Button id='users' onClick={this.handlePanelChange} icon='person' text='Users' />
+        </Navbar.Group>
+        <Navbar.Group align={Alignment.RIGHT}>
+          <Button id='settings' onClick={this.handlePanelChange} icon='cog' />
+          <Button id='session' intent={Intent.PRIMARY} onClick={this.handlePanelChange} icon='log-in' />
+        </Navbar.Group>
+      </Navbar>
+        <CarPanel />
+        <RacePanel />
+        <UserPanel />
+        <SettingsPanel />
+        <SessionPanel active />
+      </React.Fragment>
     )
   }
 }

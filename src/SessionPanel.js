@@ -48,9 +48,9 @@ class SessionPanel extends Component {
     console.log('Logging in user: ' + username)
     // Do something to validate the user/pass combination
     try {
-      let user = await axios.post('https://pwd-racetrack/user/login',
+      let user = await axios.post('https://pwd-racetrack/auth/local-login',
         {
-          'name': username,
+          'username': username,
           'password': password
         })
       // we got a user, propagate it to the state
@@ -74,6 +74,8 @@ class SessionPanel extends Component {
   render () {
     const { showPassword, loggedIn } = this.state
 
+    const panelActive = this.props.active ? {} : {'display': 'none'}
+
     const hiddenIfLoggedIn = loggedIn ? {'display': 'none'} : {}
     const hiddenIfLoggedOut = loggedIn ? {} : {'display': 'none'} 
 
@@ -88,7 +90,7 @@ class SessionPanel extends Component {
     )
 
     return (
-      <div className='sessionpanel'>
+      <div className='sessionpanel' style={panelActive}>
         <Flex p={2} align='center' justify='center'>
           <Box w={1/2} style={hiddenIfLoggedOut}>
             <Card>
