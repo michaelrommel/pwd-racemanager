@@ -5,7 +5,6 @@ class CarPanel extends Component {
   constructor (props) {
     super(props)
     this.state = {
-      'loggedIn' : true
     }
     this.handleClick = this.handleClick.bind(this)
   }
@@ -15,13 +14,11 @@ class CarPanel extends Component {
   }
 
   render () {
-    const { loggedIn } = this.state
-
     const panelActive = this.props.active ? {} : {'display': 'none'}
 
     return (
       <div className='carpanel' style={panelActive}>
-        <H3>Settings</H3>
+        <H3>Cars</H3>
         <p className='carpanel'>
           Manage Pinewood Derby cars.
         </p>

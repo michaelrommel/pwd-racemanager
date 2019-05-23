@@ -5,7 +5,6 @@ class SettingsPanel extends Component {
   constructor (props) {
     super(props)
     this.state = {
-      'loggedIn' : true
     }
     this.handleClick = this.handleClick.bind(this)
   }
@@ -15,8 +14,6 @@ class SettingsPanel extends Component {
   }
 
   render () {
-    const { loggedIn } = this.state
-
     const panelActive = this.props.active ? {} : {'display': 'none'}
 
     return (

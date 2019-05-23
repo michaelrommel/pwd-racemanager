@@ -7,9 +7,7 @@ class SessionPanel extends Component {
   constructor (props) {
     super(props)
     this.state = {
-      'loggedIn': false,
       'user': props.user,
-      'role': props.role,
       'showPassword': false,
       'newuser': '',
       'newpass': ''
@@ -31,14 +29,12 @@ class SessionPanel extends Component {
     console.log('Logging out user: ' + this.state.user)
     this.setState(
       {
-        'loggedIn': false,
-        'user': '',
-        'role': '',
+        'user': null,
         'newuser': '',
         'newpass': ''
       }
     )
-
+    this.props.onUserChange(null)
   }
 
   handleLoginClick = async (e) => {
@@ -56,12 +52,10 @@ class SessionPanel extends Component {
       // we got a user, propagate it to the state
       this.setState(
         {
-          'user': user.data.name,
-          'role': user.data.role,
-          'token': user.data.token,
-          'loggedIn': true
+          'user': user.data
         }
       )
+      this.props.onUserChange(user.data)
     } catch (err) {
       console.log('Error in logging in: ', err)
     }
@@ -72,7 +66,9 @@ class SessionPanel extends Component {
   }
 
   render () {
-    const { showPassword, loggedIn } = this.state
+    const { showPassword, user } = this.state
+
+    const loggedIn = user === null ? false : true
 
     const panelActive = this.props.active ? {} : {'display': 'none'}
 
@@ -98,9 +94,18 @@ class SessionPanel extends Component {
               <HTMLTable className='sessiontable'>
                 <thead><tr><th width="25%">Key</th><th>Value</th></tr></thead>
                 <tbody>
-                  <tr><td>User</td><td>{this.state.user}</td></tr>
-                  <tr><td>Role</td><td>{this.state.role}</td></tr>
-                  <tr><td>Token</td><td>{this.state.token}</td></tr>
+                  <tr>
+                    <td>User</td>
+                    <td>{this.state.user !== null ? this.state.user.name : ''}</td>
+                  </tr>
+                  <tr>
+                    <td>Role</td>
+                    <td>{this.state.user !== null ? this.state.user.role : ''}</td>
+                  </tr>
+                  <tr>
+                    <td>Token</td>
+                    <td>{this.state.user !== null ? this.state.user.token : ''}</td>
+                  </tr>
                 </tbody>
               </HTMLTable>
             </Card>
