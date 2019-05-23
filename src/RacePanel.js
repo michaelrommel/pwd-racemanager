@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Card, Button, Intent, Icon, H3 } from '@blueprintjs/core'
+import { Card, Button, Intent, Elevation, Icon, H3 } from '@blueprintjs/core'
 import { Flex, Box } from 'reflexbox';
 import axios from 'axios'
 
@@ -10,7 +10,7 @@ function RaceCardList (props) {
     <>
       {races.map((race) => 
         <Box p={2} w={1/3} key={race[0]}>
-          <Card key={race[0]}>
+          <Card key={race[0]} elevation={Elevation.TWO}>
             <H3>{race[0]}</H3>
             <p>{race[1]}</p>
           </Card>

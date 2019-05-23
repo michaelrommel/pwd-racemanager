@@ -39,30 +39,30 @@ class Navigation extends Component {
     return (
       <React.Fragment>
       <Navbar>
-        <Navbar.Group>
+        <Navbar.Group className='navigation'>
           <Navbar.Heading>
             <strong>pwd-racemanager</strong>
           </Navbar.Heading>
           <Navbar.Divider />
-          <Button id='cars' onClick={this.toCars}
+          <Button id='cars' onClick={this.toCars} className='navigation-button'
             intent={ this.state.panelId === 'cars' ? Intent.PRIMARY : Intent.NONE }
             disabled={ this.state.user !== null ? false : true}
             large={true} type='button' icon='drive-time' text='Cars' />
-          <Button id='races' onClick={this.toRaces}
+          <Button id='races' onClick={this.toRaces} className='navigation-button'
             intent={ this.state.panelId === 'races' ? Intent.PRIMARY : Intent.NONE }
             disabled={ this.state.user !== null ? false : true}
             large={true} type='button' icon='horizontal-bar-chart' text='Races' />
-          <Button id='users' onClick={this.toUsers}
+          <Button id='users' onClick={this.toUsers} className='navigation-button'
             intent={ this.state.panelId === 'users' ? Intent.PRIMARY : Intent.NONE }
             disabled={ this.state.user !== null ? false : true}
             large={true} type='button' icon='person' text='Users' />
         </Navbar.Group>
         <Navbar.Group align={Alignment.RIGHT}>
-          <Button id='settings' onClick={this.toSettings}
+          <Button id='settings' onClick={this.toSettings} className='navigation-button'
             intent={ this.state.panelId === 'settings' ? Intent.PRIMARY : Intent.NONE }
             disabled={ this.state.user !== null ? false : true}
             large={true} type='button' icon='cog' />
-          <Button id='session' onClick={this.toSession}
+          <Button id='session' onClick={this.toSession} className='navigation-button'
             intent={ this.state.panelId === 'session' ? Intent.PRIMARY : Intent.NONE }
             large={true} type='button' icon={ this.state.user ? 'log-out' : 'log-in'} />
         </Navbar.Group>

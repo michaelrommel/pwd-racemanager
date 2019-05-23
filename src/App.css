@@ -8,6 +8,10 @@
   padding-bottom: 2px;
 }
 
+.navigation-button {
+  margin: 0px 2px 0px 2px;
+}
+
 .sessiontable {
   word-wrap: break-word;
   word-break: break-all;
