@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { FormGroup, InputGroup, Callout, Intent, Button, Checkbox, Alignment } from '@blueprintjs/core'
+import { FormGroup, InputGroup, Callout, Intent, Icon, Tooltip, Position, Button } from '@blueprintjs/core'
 import { Formik, Form } from 'formik'
 import { Flex, Box } from 'reflexbox'
 import * as Yup from 'yup'
@@ -46,36 +46,50 @@ function AppSettingsForm (props) {
     handleChange,
     handleSubmit,
     values,
-    errors,
+    errors
   } = props
 
   return (
     <Form>
-			<FormGroup
-					helperText={'Indicates whether this installation has been initially configured.'}
-					label={'Application State'}
-					labelFor='appState'
-					labelInfo={'(required)'} >
-					<InputGroup id="appState" placeholder='Application State' large
-						value={values.appState} onChange={handleChange}/>
-			</FormGroup>
-			<Callout className={'formerrors'} hidden={errors.appState ? false : true}
-				intent={Intent.DANGER} icon={'warning-sign'}>
-				{errors.appState}
-			</Callout>
+      <FormGroup
+        helperText={'Indicates whether this installation has been initially configured.'}
+        label={'Application State'}
+        labelFor='appState'
+        labelInfo={'(required)'} >
+        <Flex align={'center'}>
+          <Box w={6/10} pr={2} >
+            <InputGroup id="appState" placeholder='Application State' large
+              value={values.appState} onChange={handleChange}/>
+          </Box>
+          <Box justify={'center'} hidden={errors.appState ? false : true} >
+            <Tooltip content={errors.appState} position={Position.TOP} >
+              <Icon icon='warning-sign' iconSize={30} intent={Intent.DANGER} />
+            </Tooltip>
+          </Box>
+          <Box w={3/10} pl={2} justify={'left'} hidden={errors.appState ? false : true} >
+            {errors.appState}
+          </Box>
+        </Flex>
+      </FormGroup>
 
 			<FormGroup
-					helperText={'The JSON Web Token Secret used to sign and verify the tokens.'}
-					label={'JSON Web Token Secret'}
-					labelFor='jwtSecret'
-					labelInfo={'(required)'} >
-					<InputGroup id="jwtSecret" placeholder='JWT Secret' large
-						value={values.jwtSecret} onChange={handleChange}/>
+				helperText={'The JSON Web Token Secret used to sign and verify the tokens.'}
+				label={'JSON Web Token Secret'}
+				labelFor='jwtSecret'
+				labelInfo={'(required)'} >
+        <Flex align={'center'}>
+          <Box w={6/10} pr={2} >
+					  <InputGroup id="jwtSecret" placeholder='JWT Secret' large
+						  value={values.jwtSecret} onChange={handleChange}/>
+          </Box>
+          <Box w={4/10} pl={2} justify={'left'} hidden={errors.jwtSecret ? false : true} >
+            <Callout hidden={errors.jwtSecret ? false : true}
+              intent={Intent.DANGER} icon={'warning-sign'}>
+              {errors.jwtSecret}
+            </Callout>
+          </Box>
+        </Flex>
 			</FormGroup>
-			<Callout className={'formerrors'} hidden={errors.jwtSecret ? false : true}
-				intent={Intent.DANGER} icon={'warning-sign'}>
-				{errors.jwtSecret}
-			</Callout>
 
 			<FormGroup
 					helperText={'Password for the admin user "root". This needs to be changed!'}
@@ -91,17 +105,22 @@ function AppSettingsForm (props) {
 			</Callout>
 
 			<FormGroup
-					helperText={'Github Client ID for OAuth authentication.'}
-					label={'Github Client ID'}
-					labelFor='githubClientId'
-					labelInfo={'(optional)'} >
-          <InputGroup id="githubClientId" placeholder='Github Client ID' large
-            value={values.githubClientId} onChange={handleChange}/>
+				helperText={'Github Client ID for OAuth authentication.'}
+				label={'Github Client ID'}
+				labelFor='githubClientId'
+				labelInfo={'(optional)'} >
+        <Flex align={'center'} justify={'space-between'}>
+          <Box w={19/20} pr={2} >
+					  <InputGroup id="githubClientId" placeholder='Github Client ID' large
+						  value={values.githubClientId} onChange={handleChange}/>
+          </Box>
+          <Box hidden={errors.githubClientId ? false : true} >
+            <Tooltip content={errors.githubClientId} position={Position.TOP} >
+              <Icon icon='warning-sign' iconSize={30} intent={Intent.DANGER} />
+            </Tooltip>
+          </Box>
+        </Flex>
 			</FormGroup>
-			<Callout className={'formerrors'} hidden={errors.githubClientId ? false : true}
-				intent={Intent.DANGER} icon={'warning-sign'}>
-				{errors.githubClientId}
-			</Callout>
 
 			<FormGroup
 					helperText={'Github Client Secret for OAuth authentication.'}
@@ -132,7 +151,7 @@ class SettingsPanel extends Component {
       'jwtSecret': 'dK8TDkc0qOdeE8-iUpzxG',
       'rootpwd': 'tdlvucveLpCghyS4ZSsJB',
       'rootPwdChanged': false,
-      'githubClientId': "123",
+      'githubClientId': "123A",
       'githubClientSecret': "123"
     }
     // we call a function to return a validation Yup schema
@@ -160,7 +179,7 @@ class SettingsPanel extends Component {
     return (
       <div className='settingspanel' style={panelActive}>
 				<Flex p={2} align='center' justify='center'>
-          <Box w={1/2}>
+          <Box w={4/5}>
 						<Formik
 							initialValues={initialValues}
 							validationSchema={this.ValidationSchema}
