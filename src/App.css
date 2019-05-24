@@ -8,6 +8,14 @@
   padding-bottom: 2px;
 }
 
+.formerrors {
+  margin-bottom: 1.5em;
+}
+
+.savebutton {
+  margin-top: 1.5em;
+}
+
 .navigation-button {
   margin: 0px 2px 0px 2px;
 }

@@ -1,13 +1,14 @@
 import React, { Component } from 'react'
-import { Card, Button, Intent, Elevation, Icon, H3 } from '@blueprintjs/core'
+import { Card, Button, Intent, Elevation, H3 } from '@blueprintjs/core'
 import { Flex, Box } from 'reflexbox';
 import axios from 'axios'
 
 function RaceCardList (props) {
   const races = props.races
   if (races === undefined || races === null) return null
+
   return (
-    <>
+    <React-Fragment>
       {races.map((race) => 
         <Box p={2} w={1/3} key={race[0]}>
           <Card key={race[0]} elevation={Elevation.TWO}>
@@ -16,10 +17,9 @@ function RaceCardList (props) {
           </Card>
         </Box>
       )}
-    </>
+    </React-Fragment>
   )
 }
-
 
 class RacePanel extends Component {
   constructor (props) {
@@ -28,6 +28,10 @@ class RacePanel extends Component {
       'shortRaces': []
     }
     this.getRaces = this.getRaces.bind(this)
+  }
+
+	componentDidMount() {
+    console.log('RacePanel mounted.')
   }
 
   getRaces = async () => {
