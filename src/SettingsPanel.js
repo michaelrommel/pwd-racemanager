@@ -9,7 +9,6 @@ import { DisplayToast } from './DisplayToast'
 import * as Yup from 'yup'
 
 const getValidationSchema = (values) => {
-  console.log('getValidationSchema with: ', values.rootpwd)
   return (
     Yup.object().shape({
       appState: Yup.string()
@@ -52,7 +51,8 @@ function FieldWithError (props) {
     values,
     errors,
     setFieldValue,
-    lock
+    lock,
+    disabled
   } = props
 
   const handleLockClick = () => {
@@ -75,7 +75,9 @@ function FieldWithError (props) {
       <Box w={6 / 10} pr={2} >
         <InputGroup id={fieldname} placeholder={placeholder} large
           value={values[fieldname]} onChange={handleChange}
-          rightElement={lock ? LockButton : null} type={lock && !values.showPassword ? 'password' : 'text'}
+          rightElement={lock ? LockButton : null} 
+          type={lock && !values.showPassword ? 'password' : 'text'}
+          disabled={disabled}
         />
       </Box>
       <Box justify={'center'} hidden={!errors[fieldname]} >
@@ -111,6 +113,7 @@ function AppSettingsForm (props) {
         <FieldWithError
           fieldname={'appState'}
           placeholder={'fresh|configured'}
+          disabled={true}
           handleChange={handleChange}
           values={values}
           errors={errors} />
@@ -169,13 +172,14 @@ function AppSettingsForm (props) {
           errors={errors} />
       </FormGroup>
 
-      <Button className={'savebutton'} id='submit' onClick={handleSubmit} type='submit'
+      <Button className={'savebutton'} id='save' onClick={handleSubmit} type='submit'
         intent={Intent.PRIMARY} large
         text={isSubmitting ? 'Saving...' : 'Save'} />
 
       <FormikValidator
         initialValues={initialValues.rootpwd} 
         values={values.rootpwd} 
+        fieldName={'rootpwd'}
         validateForm={validateForm}
         setFieldTouched={setFieldTouched}
       />
@@ -203,7 +207,7 @@ class SettingsPanel extends Component {
   }
 
   componentDidMount() {
-    console.log('SettingsPanel mounted')
+    console.log('SettingsPanel: mounted')
     this.getAppSettings()
   }
 
@@ -226,7 +230,7 @@ class SettingsPanel extends Component {
         // try to get the view for anonymous users
         settings = await axios.get('https://pwd-racetrack/admin/init')
       }
-      console.log('SettingsPanel: got application settings: ', settings)
+      console.log('SettingsPanel: got application settings')
       let newstate ={ 
         'appState': settings.data.appState || '',
         'jwtSecret': settings.data.jwtSecret || '',
@@ -249,14 +253,14 @@ class SettingsPanel extends Component {
           // we got a user, propagate it to the state
           // this.setState({ 'user': user.data })
           this.props.onUserChange(user.data)
-          console.log('Logged in as root user: ')
+          console.log('Settingspanel: logged in as root user: ')
         } catch (err) {
-          console.log('Error in logging in as root user: ', err)
+          console.log('Settingspanel: error in logging in as root user: ', err)
         }
       }
       return newstate
     } catch (err) {
-      console.log('Error getting application settings: ', err)
+      console.log('Settingspanel: error getting application settings: ', err)
       return undefined
     }
   }
@@ -268,7 +272,7 @@ class SettingsPanel extends Component {
       config = {
         headers: {'Authorization': 'Bearer ' + this.props.user.token}
       }
-      //settings.appState = 'configured'
+      settings.appState = 'configured'
       let response = await axios.post('https://pwd-racetrack/admin/settings', settings, config)
       console.log('SettingsPanel: stored application settings: ', response)
       if (response.data.success) {
@@ -278,14 +282,13 @@ class SettingsPanel extends Component {
       }
       return true
     } catch (err) {
-      console.log('Error storing application settings: ', err)
+      console.log('Settingspanel: error storing application settings: ', err)
       return false
     }
   }
 
   onSubmit = async (values, actions) => {
     try {
-      console.log(values)
       if (await this.storeAppSettings(values)) { 
         this.showToast('Successfully stored settings.', Intent.SUCCESS, 'tick-circle')
       } else {
@@ -299,8 +302,6 @@ class SettingsPanel extends Component {
   }
 
 	showToast = (msg, intent, icon) => {
-			// create toasts in response to interactions.
-			// in most cases, it's enough to simply create and forget (thanks to timeout).
 			DisplayToast.show({ 'message': msg, 'intent': intent, 'icon': icon })
 	}
 
@@ -308,8 +309,6 @@ class SettingsPanel extends Component {
     const panelActive = this.props.active ? {} : { 'display': 'none' }
     this.loadNewSettings(this.props.user)
     const initialValues = this.state
-
-    console.log('Rendering SettingsPanel with: ', JSON.stringify(initialValues,null,2))
 
     return (
       <div className='settingspanel' style={panelActive}>

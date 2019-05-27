@@ -1,7 +1,8 @@
 import React, { Component } from 'react'
-import { Spinner, FormGroup, Icon, Button, Card, InputGroup, Intent, Tooltip, HTMLTable, H5 } from '@blueprintjs/core'
+import { Spinner, FormGroup, Button, Card, InputGroup, Intent, Tooltip, HTMLTable, H5 } from '@blueprintjs/core'
 import { Formik, Form } from 'formik'
 import { Flex, Box } from 'reflexbox'
+import { DisplayToast } from './DisplayToast'
 import axios from 'axios'
 import * as Yup from 'yup'
 
@@ -23,7 +24,7 @@ function LoginForm (props) {
     handleSubmit,
     setFieldValue,
     values,
-    errors,
+    isValid
   } = props
 
   const handleLockClick = () => {
@@ -31,7 +32,7 @@ function LoginForm (props) {
   }
 
   const LockButton = (
-    <Tooltip content={`${values.showPassword ? 'Hide' : 'Show'} Password`}>
+    <Tooltip content={values.showPassword ? 'Hide Password' : 'Show Password'}>
       <Button
         value={values.showPassword}
         icon={values.showPassword ? "unlock" : "lock"}
@@ -45,36 +46,26 @@ function LoginForm (props) {
     <Form>
       <FormGroup>
         <Flex align={'center'}>
-          <Box w={6 / 10} pr={2} >
+          <Box w={1}>
             <InputGroup id='username' placeholder='Username' large
               leftIcon='person' className='logingroup'
-              value={values.newuser} onChange={handleChange} />
-          </Box>
-          <Box justify={'center'} hidden={!errors['username']} >
-            <Icon icon='warning-sign' iconSize={30} intent={Intent.DANGER} />
-          </Box>
-          <Box w={3 / 10} pl={2} justify={'left'} hidden={!errors['username']} >
-            {errors['username']}
+              value={values.username} onChange={handleChange} />
           </Box>
         </Flex>
         <Flex align={'center'}>
-          <Box w={6 / 10} pr={2} >
+          <Box w={1}>
             <InputGroup id='password' placeholder='Password' large
-              leftIcon='key' rightElement={LockButton} type={values.showPassword ? 'text' : 'password'}
-              value={values.newpass} onChange={handleChange} className='logingroup' />
-          </Box>
-          <Box justify={'center'} hidden={!errors['password']} >
-            <Icon icon='warning-sign' iconSize={30} intent={Intent.DANGER} />
-          </Box>
-          <Box w={3 / 10} pl={2} justify={'left'} hidden={!errors['password']} >
-            {errors['password']}
+              leftIcon='key' rightElement={LockButton}
+              type={values.showPassword ? 'text' : 'password'}
+              value={values.password} onChange={handleChange} className='logingroup' />
           </Box>
         </Flex>
         <Flex justify={'center'} align={'center'}>
-          <Box w={6 / 10} p={1} justify={'center'} >
-            <Button id='submit' onClick={handleSubmit} type='submit'
+          <Box p={1} justify={'center'}>
+            <Button id='login' onClick={handleSubmit} type='submit'
               intent={Intent.PRIMARY} large active={true}
-              text={isSubmitting ? '' : 'Login'}> 
+              text={isSubmitting ? '' : 'Login'}
+              disabled={!isValid ? true : false} > 
               <Box hidden={!isSubmitting}>
                 <Spinner id='spinner' size={Spinner.SIZE_SMALL} />
               </Box>
@@ -89,23 +80,22 @@ function LoginForm (props) {
 class SessionPanel extends Component {
   constructor (props) {
     super(props)
-    this.state = {
+    this.emptystate = {
       'showPassword': false,
-      'newuser': '',
-      'newpass': ''
+      'username': '',
+      'password': ''
     }
+    this.state = { ...this.emptystate }
     this.ValidationSchema = getValidationSchema()
   }
 
+	showToast = (msg, intent, icon) => {
+			DisplayToast.show({ 'message': msg, 'intent': intent, 'icon': icon })
+	}
+
   handleLogoutClick = (e) => {
-    console.log('Logging out user: ' + this.props.user)
-    this.setState(
-      {
-        'user': null,
-        'newuser': '',
-        'newpass': ''
-      }
-    )
+    console.log('Sessionpanel: logging out user: ' + this.props.user)
+    this.setState(this.emptystate)
     this.props.onUserChange(null)
   }
 
@@ -113,18 +103,19 @@ class SessionPanel extends Component {
     const username = values.username
     const password = values.password
 
-    console.log('Logging in user: ' + username)
-    // Do something to validate the user/pass combination
+    console.log('Sessionpanel: logging in user: ' + username)
     try {
       let user = await axios.post('https://pwd-racetrack/auth/local-login',
         { 'username': username,
           'password': password })
-      // we got a user, propagate it to the state
-      this.setState({ 'user': user.data })
       this.props.onUserChange(user.data)
-      actions.setSubmitting(false);
+      actions.setSubmitting(false)
+      this.setState(this.emptystate)
+      actions.resetForm(this.emptyState)
     } catch (err) {
-      console.log('Error in logging in: ', err)
+      console.log('Sessionpanel: error in logging in: ', err)
+      this.showToast('Login error!', Intent.DANGER, 'warning-sign')
+      actions.setSubmitting(false)
     }
   }
 
@@ -135,27 +126,23 @@ class SessionPanel extends Component {
     const hiddenIfLoggedIn = loggedIn ? {'display': 'none'} : {}
     const hiddenIfLoggedOut = !loggedIn ? {'display': 'none'} : {}
 
+    const initialValues = this.state
+
     return (
       <div className='sessionpanel' style={panelActive}>
         <Flex p={2} align='center' justify='center'>
-          <Box w={1/2} style={hiddenIfLoggedOut}>
+          <Box w={2/3} style={hiddenIfLoggedOut}>
             <Card>
               <H5>Session Information</H5>
               <HTMLTable className='sessiontable'>
-                <thead><tr><th width="25%">Key</th><th>Value</th></tr></thead>
+                <thead><tr><th width="30%">Key</th><th>Value</th></tr></thead>
                 <tbody>
-                  <tr>
-                    <td>User</td>
-                    <td>{this.props.user !== null ? this.props.user.name : ''}</td>
-                  </tr>
-                  <tr>
-                    <td>Role</td>
-                    <td>{this.props.user !== null ? this.props.user.role : ''}</td>
-                  </tr>
-                  <tr>
-                    <td>Token</td>
-                    <td>{this.props.user !== null ? this.props.user.token : ''}</td>
-                  </tr>
+                  <tr><td>Username</td>
+                    <td>{this.props.user ? this.props.user.username : ''}</td></tr>
+                  <tr><td>Role</td>
+                    <td>{this.props.user ? this.props.user.role : ''}</td></tr>
+                  <tr><td>Token</td>
+                    <td>{this.props.user ? this.props.user.token : ''}</td></tr>
                 </tbody>
               </HTMLTable>
             </Card>
@@ -163,14 +150,8 @@ class SessionPanel extends Component {
           <Box w={1/2} style={hiddenIfLoggedIn}>
             <Formik
               enableReinitialize={true}
-              initialValues={{
-                'username': this.state.newuser,
-                'password': this.state.newpass,
-                'showPassword': false
-              }}
-              showPassword={this.state.showPassword} 
-              handleLockClick={this.handleLockClick}
-              validationSchema={this.ValidationSchema}
+              initialValues={initialValues}
+							validationSchema={this.ValidationSchema}
               onSubmit={this.handleLoginClick}
               render={LoginForm}
             />

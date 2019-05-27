@@ -30,13 +30,13 @@ class Navigation extends Component {
   raceChange = (raceId) => { this.setState({ 'raceId': raceId }) }
   
   userChange = (user) => { 
-    console.log('changing user to: ', user)
+    console.log('App: changing user to: ', user)
     this.setState({ 'user': user })
     this.getAppSettings()
   }
 
   componentDidMount() {
-    console.log('App mounted')
+    console.log('App: mounted')
     this.getAppSettings()
   }
 
@@ -58,7 +58,7 @@ class Navigation extends Component {
       console.log('App: got application state: ', settings)
       this.setState({ 'appState': settings.data.appState })
     } catch (err) {
-      console.log('Error getting application state: ', err)
+      console.log('App: Error getting application state: ', err)
       settings = {
         data: {
           'appState': undefined
@@ -66,7 +66,7 @@ class Navigation extends Component {
       }
       this.showToast('Network error while getting app settings.', Intent.DANGER, 'warning-sign')
     }
-    console.log('Setting the active panel')
+    console.log('App: Setting the active panel')
     this.setState({ 'panelId': (settings.data.appState === 'fresh') ? 'settings' : 'session' })
   }
 
