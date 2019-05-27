@@ -6,6 +6,7 @@ import RacePanel from './RacePanel'
 import SettingsPanel from './SettingsPanel'
 import UserPanel from './UserPanel'
 import SessionPanel from './SessionPanel'
+import { DisplayToast } from './DisplayToast'
 import './App.css'
 
 class Navigation extends Component {
@@ -31,6 +32,7 @@ class Navigation extends Component {
   userChange = (user) => { 
     console.log('changing user to: ', user)
     this.setState({ 'user': user })
+    this.getAppSettings()
   }
 
   componentDidMount() {
@@ -57,11 +59,22 @@ class Navigation extends Component {
       this.setState({ 'appState': settings.data.appState })
     } catch (err) {
       console.log('Error getting application state: ', err)
-      settings.data.appState = undefined
+      settings = {
+        data: {
+          'appState': undefined
+        }
+      }
+      this.showToast('Network error while getting app settings.', Intent.DANGER, 'warning-sign')
     }
     console.log('Setting the active panel')
     this.setState({ 'panelId': (settings.data.appState === 'fresh') ? 'settings' : 'session' })
   }
+
+	showToast = (msg, intent, icon) => {
+			// create toasts in response to interactions.
+			// in most cases, it's enough to simply create and forget (thanks to timeout).
+			DisplayToast.show({ 'message': msg, 'intent': intent, 'icon': icon })
+	}
 
   render () {
     return (

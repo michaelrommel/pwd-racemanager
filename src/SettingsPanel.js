@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { FormGroup, InputGroup, Intent, Icon, Button } from '@blueprintjs/core'
+import { Tooltip, FormGroup, InputGroup, Intent, Icon, Button } from '@blueprintjs/core'
 import { Formik, Form } from 'formik'
 import { Flex, Box } from 'reflexbox'
 import axios from 'axios'
@@ -26,7 +26,7 @@ const getValidationSchema = (values) => {
         .test(
           'rootPwdChanged',
           'You have to change the root password!',
-          pwd => pwd !== values.rootpwd
+          pwd => (pwd !== values.rootpwd) || (values.appState === 'configured')
         ),
       githubClientId: Yup.string()
         .test(
@@ -50,14 +50,33 @@ function FieldWithError (props) {
     placeholder,
     handleChange,
     values,
-    errors
+    errors,
+    setFieldValue,
+    lock
   } = props
+
+  const handleLockClick = () => {
+    setFieldValue('showPassword', !values.showPassword, false)
+  }
+
+  const LockButton = (
+    <Tooltip content={`${values.showPassword ? 'Hide' : 'Show'} Password`}>
+      <Button
+        value={values.showPassword}
+        icon={values.showPassword ? "unlock" : "lock"}
+        intent={Intent.NONE}
+        onClick={handleLockClick}
+      />
+    </Tooltip>
+  )
 
   return (
     <Flex align={'center'}>
       <Box w={6 / 10} pr={2} >
         <InputGroup id={fieldname} placeholder={placeholder} large
-          value={values[fieldname]} onChange={handleChange} />
+          value={values[fieldname]} onChange={handleChange}
+          rightElement={lock ? LockButton : null} type={lock && !values.showPassword ? 'password' : 'text'}
+        />
       </Box>
       <Box justify={'center'} hidden={!errors[fieldname]} >
         <Icon icon='warning-sign' iconSize={30} intent={Intent.DANGER} />
@@ -77,6 +96,7 @@ function AppSettingsForm (props) {
     validateForm,
     initialValues,
     setFieldTouched,
+    setFieldValue,
     values,
     errors
   } = props
@@ -118,8 +138,9 @@ function AppSettingsForm (props) {
           fieldname={'rootpwd'}
           placeholder={'super secret'}
           handleChange={handleChange}
+          setFieldValue={setFieldValue}
           values={values}
-          errors={errors} />
+          errors={errors} lock={true} />
       </FormGroup>
 
       <FormGroup
@@ -156,7 +177,6 @@ function AppSettingsForm (props) {
         initialValues={initialValues.rootpwd} 
         values={values.rootpwd} 
         validateForm={validateForm}
-        handleChange={handleChange}
         setFieldTouched={setFieldTouched}
       />
     </Form>
@@ -184,14 +204,11 @@ class SettingsPanel extends Component {
 
   componentDidMount() {
     console.log('SettingsPanel mounted')
-    console.log('SettingsPanel: calling getAppSettings')
     this.getAppSettings()
   }
 
-  getSettings = memoize(
-    async (user) => {
-      await this.getAppSettings()
-    }
+  loadNewSettings = memoize(
+    (user) => { this.getAppSettings() }
   )
 
   async getAppSettings() {
@@ -224,7 +241,7 @@ class SettingsPanel extends Component {
       this.setState(newstate)
       // if the application state is fresh, let's see if we 
       // can log in as root user
-      if (newstate.appState === 'fresh') {
+      if (newstate.appState === 'fresh' && !this.props.user ) {
         try {
           let user = await axios.post('https://pwd-racetrack/auth/local-login',
             { 'username': 'root',
@@ -251,10 +268,10 @@ class SettingsPanel extends Component {
       config = {
         headers: {'Authorization': 'Bearer ' + this.props.user.token}
       }
-      settings.appState = 'configured'
+      //settings.appState = 'configured'
       let response = await axios.post('https://pwd-racetrack/admin/settings', settings, config)
       console.log('SettingsPanel: stored application settings: ', response)
-      if (response.data.inserted === 1) {
+      if (response.data.success) {
         // success storing the new settings, now
         // reinitialize user, token and JWT
         this.setState(settings)
@@ -276,9 +293,8 @@ class SettingsPanel extends Component {
       }
       actions.setSubmitting(false);
     } catch (err) {
+      this.showToast('Failed to submit settings.', Intent.DANGER, 'warning-sign')
       actions.setSubmitting(false)
-      actions.setErrors({ 'appState': 'This is an example error' })
-      actions.setStatus({ 'msg': 'Set some arbitrary status or data' })
     }
   }
 
@@ -290,8 +306,8 @@ class SettingsPanel extends Component {
 
   render () {
     const panelActive = this.props.active ? {} : { 'display': 'none' }
-    const initialValues = this.getSettings(this.props.user)
-    // const initialValues = this.state
+    this.loadNewSettings(this.props.user)
+    const initialValues = this.state
 
     console.log('Rendering SettingsPanel with: ', JSON.stringify(initialValues,null,2))
 
