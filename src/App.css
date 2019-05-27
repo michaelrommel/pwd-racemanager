@@ -24,3 +24,32 @@
   word-wrap: break-word;
   word-break: break-all;
 }
+
+@font-face { 
+  font-family: 'SH Headline';
+  src: url( './Bree-SH-Headline-Regular.woff2') format('woff2');
+}
+
+.display {
+  text-align: center;
+  font-family: "SH Headline", -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+}
+
+.displaybanner {
+  /* border: 3px solid #ff8605;
+  border-width: 0px 0px 2px 0px; */
+}
+
+.displaysectionleft {
+  border: 2px solid #ff8605;
+  border-width: 2px 0px 0px 0px;
+}
+
+.displaysectionright {
+  border: 2px solid #ff8605;
+  border-width: 2px 0px 0px 2px;
+}
+
+h2.display {
+  text-align: center;
+}
