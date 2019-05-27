@@ -1,14 +1,19 @@
 import React, { Component } from 'react'
-import { FormGroup, InputGroup, Callout, Intent, Icon, Tooltip, Position, Button } from '@blueprintjs/core'
+import { FormGroup, InputGroup, Intent, Icon, Button } from '@blueprintjs/core'
 import { Formik, Form } from 'formik'
 import { Flex, Box } from 'reflexbox'
+import axios from 'axios'
+import memoize from 'memoize-one'
+import FormikValidator from './FormikValidator'
+import { DisplayToast } from './DisplayToast'
 import * as Yup from 'yup'
 
-const getValidationSchema = (values) => { 
+const getValidationSchema = (values) => {
+  console.log('getValidationSchema with: ', values.rootpwd)
   return (
     Yup.object().shape({
       appState: Yup.string()
-        .oneOf(['fresh','configured'])
+        .oneOf(['fresh', 'configured'])
         .required('Required'),
       jwtSecret: Yup.string()
         .min(20, 'Too short!')
@@ -27,24 +32,51 @@ const getValidationSchema = (values) => {
         .test(
           'ghid',
           'Can contain only lowercase letters and numbers!',
-          (ghid) => ( /^[\x61-\x7a\x30-\x39]*$/.test(ghid))
+          (ghid) => (/^[\x61-\x7a\x30-\x39]*$/.test(ghid))
         ),
       githubClientSecret: Yup.string()
         .test(
           'ghsecret',
           'Can contain only lowercase letters and numbers!',
-          (ghsec) => ( /^[\x61-\x7a\x30-\x39]*$/.test(ghsec))
+          (ghsec) => (/^[\x61-\x7a\x30-\x39]*$/.test(ghsec))
         )
     })
   )
 }
 
+function FieldWithError (props) {
+  const {
+    fieldname,
+    placeholder,
+    handleChange,
+    values,
+    errors
+  } = props
+
+  return (
+    <Flex align={'center'}>
+      <Box w={6 / 10} pr={2} >
+        <InputGroup id={fieldname} placeholder={placeholder} large
+          value={values[fieldname]} onChange={handleChange} />
+      </Box>
+      <Box justify={'center'} hidden={!errors[fieldname]} >
+        <Icon icon='warning-sign' iconSize={30} intent={Intent.DANGER} />
+      </Box>
+      <Box w={3 / 10} pl={2} justify={'left'} hidden={!errors[fieldname]} >
+        {errors[fieldname]}
+      </Box>
+    </Flex>
+  )
+}
 
 function AppSettingsForm (props) {
   const {
     isSubmitting,
     handleChange,
     handleSubmit,
+    validateForm,
+    initialValues,
+    setFieldTouched,
     values,
     errors
   } = props
@@ -56,138 +88,226 @@ function AppSettingsForm (props) {
         label={'Application State'}
         labelFor='appState'
         labelInfo={'(required)'} >
-        <Flex align={'center'}>
-          <Box w={6/10} pr={2} >
-            <InputGroup id="appState" placeholder='Application State' large
-              value={values.appState} onChange={handleChange}/>
-          </Box>
-          <Box justify={'center'} hidden={errors.appState ? false : true} >
-            <Tooltip content={errors.appState} position={Position.TOP} >
-              <Icon icon='warning-sign' iconSize={30} intent={Intent.DANGER} />
-            </Tooltip>
-          </Box>
-          <Box w={3/10} pl={2} justify={'left'} hidden={errors.appState ? false : true} >
-            {errors.appState}
-          </Box>
-        </Flex>
+        <FieldWithError
+          fieldname={'appState'}
+          placeholder={'fresh|configured'}
+          handleChange={handleChange}
+          values={values}
+          errors={errors} />
       </FormGroup>
 
-			<FormGroup
-				helperText={'The JSON Web Token Secret used to sign and verify the tokens.'}
-				label={'JSON Web Token Secret'}
-				labelFor='jwtSecret'
-				labelInfo={'(required)'} >
-        <Flex align={'center'}>
-          <Box w={6/10} pr={2} >
-					  <InputGroup id="jwtSecret" placeholder='JWT Secret' large
-						  value={values.jwtSecret} onChange={handleChange}/>
-          </Box>
-          <Box w={4/10} pl={2} justify={'left'} hidden={errors.jwtSecret ? false : true} >
-            <Callout hidden={errors.jwtSecret ? false : true}
-              intent={Intent.DANGER} icon={'warning-sign'}>
-              {errors.jwtSecret}
-            </Callout>
-          </Box>
-        </Flex>
-			</FormGroup>
+      <FormGroup
+        helperText={'The JSON Web Token Secret used to sign and verify the tokens.'}
+        label={'JSON Web Token Secret'}
+        labelFor='jwtSecret'
+        labelInfo={'(required)'} >
+        <FieldWithError
+          fieldname={'jwtSecret'}
+          placeholder={'JWT Secret'}
+          handleChange={handleChange}
+          values={values}
+          errors={errors} />
+      </FormGroup>
 
-			<FormGroup
-					helperText={'Password for the admin user "root". This needs to be changed!'}
-					label={'root Password'}
-					labelFor='rootpwd'
-					labelInfo={'(required)'} >
-          <InputGroup id="rootpwd" placeholder='root password' large
-            value={values.rootpwd} onChange={handleChange}/>
-			</FormGroup>
-			<Callout className={'formerrors'} hidden={errors.rootpwd ? false : true}
-				intent={Intent.DANGER} icon={'warning-sign'}>
-				{errors.rootpwd}
-			</Callout>
+      <FormGroup
+        helperText={'Password for the admin user "root". This needs to be changed!'}
+        label={'root Password'}
+        labelFor='rootpwd'
+        labelInfo={'(required)'} >
+        <FieldWithError
+          fieldname={'rootpwd'}
+          placeholder={'super secret'}
+          handleChange={handleChange}
+          values={values}
+          errors={errors} />
+      </FormGroup>
 
-			<FormGroup
-				helperText={'Github Client ID for OAuth authentication.'}
-				label={'Github Client ID'}
-				labelFor='githubClientId'
-				labelInfo={'(optional)'} >
-        <Flex align={'center'} justify={'space-between'}>
-          <Box w={19/20} pr={2} >
-					  <InputGroup id="githubClientId" placeholder='Github Client ID' large
-						  value={values.githubClientId} onChange={handleChange}/>
-          </Box>
-          <Box hidden={errors.githubClientId ? false : true} >
-            <Tooltip content={errors.githubClientId} position={Position.TOP} >
-              <Icon icon='warning-sign' iconSize={30} intent={Intent.DANGER} />
-            </Tooltip>
-          </Box>
-        </Flex>
-			</FormGroup>
+      <FormGroup
+        helperText={'Github Client ID for OAuth authentication.'}
+        label={'Github Client ID'}
+        labelFor='githubClientId'
+        labelInfo={'(optional)'} >
+        <FieldWithError
+          fieldname={'githubClientId'}
+          placeholder={'Your Github Client ID'}
+          handleChange={handleChange}
+          values={values}
+          errors={errors} />
+      </FormGroup>
 
-			<FormGroup
-					helperText={'Github Client Secret for OAuth authentication.'}
-					label={'Github Client Secret'}
-					labelFor='githubClientSecret'
-					labelInfo={'(optional)'} >
-          <InputGroup id="githubClientSecret" placeholder='Github Client Secret' large
-            value={values.githubClientSecret} onChange={handleChange}/>
-			</FormGroup>
-			<Callout className={'formerrors'} hidden={errors.githubClientSecret ? false : true}
-				intent={Intent.DANGER} icon={'warning-sign'}>
-				{errors.githubClientSecret}
-			</Callout>
+      <FormGroup
+        helperText={'Github Client Secret for OAuth authentication.'}
+        label={'Github Client Secret'}
+        labelFor='githubClientSecret'
+        labelInfo={'(optional)'} >
+        <FieldWithError
+          fieldname={'githubClientSecret'}
+          placeholder={'Your Github Client Secret'}
+          handleChange={handleChange}
+          values={values}
+          errors={errors} />
+      </FormGroup>
 
       <Button className={'savebutton'} id='submit' onClick={handleSubmit} type='submit'
-				intent={Intent.PRIMARY} large={true} 
-				text={isSubmitting ? 'Saving...' : 'Save'} />
-		</Form>
+        intent={Intent.PRIMARY} large
+        text={isSubmitting ? 'Saving...' : 'Save'} />
+
+      <FormikValidator
+        initialValues={initialValues.rootpwd} 
+        values={values.rootpwd} 
+        validateForm={validateForm}
+        handleChange={handleChange}
+        setFieldTouched={setFieldTouched}
+      />
+    </Form>
   )
 }
-
 
 class SettingsPanel extends Component {
   constructor (props) {
     super(props)
+    // we need to initialize all form fields with some value
+    // otherwise React will complain because the field changes
+    // from uncontrolle to controlled input
     this.state = {
-      'appState': 'fresh',
-      'jwtSecret': 'dK8TDkc0qOdeE8-iUpzxG',
-      'rootpwd': 'tdlvucveLpCghyS4ZSsJB',
-      'rootPwdChanged': false,
-      'githubClientId': "123A",
-      'githubClientSecret': "123"
+      'appState': '',
+      'jwtSecret': '',
+      'rootpwd': '',
+      'githubClientId': '',
+      'githubClientSecret': ''
     }
     // we call a function to return a validation Yup schema
-    // this gives us the ability to pass a state parameter 
+    // this gives us the ability to pass a state parameter
     // to the created schema
     this.ValidationSchema = getValidationSchema(this.state)
   }
 
-  render () {
-    const panelActive = this.props.active ? {} : {'display': 'none'}
+  componentDidMount() {
+    console.log('SettingsPanel mounted')
+    console.log('SettingsPanel: calling getAppSettings')
+    this.getAppSettings()
+  }
 
-    const initialValues = this.state
-
-    const onSubmit = (values, actions) => {
-      try {
-        console.log(values)
-        //actions.setSubmitting(false);
-      } catch (err) {
-        actions.setSubmitting(false);
-        actions.setErrors({ 'appState':'This is an example error' });
-        actions.setStatus({ 'msg': 'Set some arbitrary status or data' });
-      }
+  getSettings = memoize(
+    async (user) => {
+      await this.getAppSettings()
     }
+  )
+
+  async getAppSettings() {
+    let settings
+    try {
+      console.log('SettingsPanel: getting application settings: ')
+      let config
+      if (this.props.user) {
+        // a user already logged in, use the user token
+        config = {
+          headers: {'Authorization': 'Bearer ' + this.props.user.token}
+        };
+        settings = await axios.get('https://pwd-racetrack/admin/settings', config)
+      } else {
+        // try to get the view for anonymous users
+        settings = await axios.get('https://pwd-racetrack/admin/init')
+      }
+      console.log('SettingsPanel: got application settings: ', settings)
+      let newstate ={ 
+        'appState': settings.data.appState || '',
+        'jwtSecret': settings.data.jwtSecret || '',
+        'rootpwd': settings.data.rootpwd || '',
+        'githubClientId': settings.data.githubClientId || '',
+        'githubClientSecret': settings.data.githubClientSecret || '',
+      }
+      // this sets a new validator with the new values to compare to
+      // especially the rootpwd
+      this.ValidationSchema = getValidationSchema(newstate)
+      // this will trigger a re-render with the new values
+      this.setState(newstate)
+      // if the application state is fresh, let's see if we 
+      // can log in as root user
+      if (newstate.appState === 'fresh') {
+        try {
+          let user = await axios.post('https://pwd-racetrack/auth/local-login',
+            { 'username': 'root',
+              'password': settings.data.rootpwd })
+          // we got a user, propagate it to the state
+          // this.setState({ 'user': user.data })
+          this.props.onUserChange(user.data)
+          console.log('Logged in as root user: ')
+        } catch (err) {
+          console.log('Error in logging in as root user: ', err)
+        }
+      }
+      return newstate
+    } catch (err) {
+      console.log('Error getting application settings: ', err)
+      return undefined
+    }
+  }
+
+  async storeAppSettings(settings) {
+    try {
+      let config
+      console.log('SettingsPanel: storing application settings: ')
+      config = {
+        headers: {'Authorization': 'Bearer ' + this.props.user.token}
+      }
+      settings.appState = 'configured'
+      let response = await axios.post('https://pwd-racetrack/admin/settings', settings, config)
+      console.log('SettingsPanel: stored application settings: ', response)
+      if (response.data.inserted === 1) {
+        // success storing the new settings, now
+        // reinitialize user, token and JWT
+        this.setState(settings)
+      }
+      return true
+    } catch (err) {
+      console.log('Error storing application settings: ', err)
+      return false
+    }
+  }
+
+  onSubmit = async (values, actions) => {
+    try {
+      console.log(values)
+      if (await this.storeAppSettings(values)) { 
+        this.showToast('Successfully stored settings.', Intent.SUCCESS, 'tick-circle')
+      } else {
+        this.showToast('Failed to store settings.', Intent.DANGER, 'warning-sign')
+      }
+      actions.setSubmitting(false);
+    } catch (err) {
+      actions.setSubmitting(false)
+      actions.setErrors({ 'appState': 'This is an example error' })
+      actions.setStatus({ 'msg': 'Set some arbitrary status or data' })
+    }
+  }
+
+	showToast = (msg, intent, icon) => {
+			// create toasts in response to interactions.
+			// in most cases, it's enough to simply create and forget (thanks to timeout).
+			DisplayToast.show({ 'message': msg, 'intent': intent, 'icon': icon })
+	}
+
+  render () {
+    const panelActive = this.props.active ? {} : { 'display': 'none' }
+    const initialValues = this.getSettings(this.props.user)
+    // const initialValues = this.state
+
+    console.log('Rendering SettingsPanel with: ', JSON.stringify(initialValues,null,2))
 
     return (
       <div className='settingspanel' style={panelActive}>
-				<Flex p={2} align='center' justify='center'>
-          <Box w={4/5}>
-						<Formik
-							initialValues={initialValues}
-							validationSchema={this.ValidationSchema}
-							onSubmit={onSubmit}
-							render={AppSettingsForm}
-						/>
-					</Box>
-				</Flex>
+        <Flex p={2} align='center' justify='center'>
+          <Box w={4 / 5}>
+            <Formik
+              enableReinitialize={true}
+              initialValues={initialValues}
+              validationSchema={this.ValidationSchema}
+              onSubmit={this.onSubmit}
+              render={AppSettingsForm}
+            />
+          </Box>
+        </Flex>
       </div>
     )
   }

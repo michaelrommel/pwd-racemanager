@@ -8,7 +8,7 @@ function RaceCardList (props) {
   if (races === undefined || races === null) return null
 
   return (
-    <React-Fragment>
+    <React.Fragment>
       {races.map((race) => 
         <Box p={2} w={1/3} key={race[0]}>
           <Card key={race[0]} elevation={Elevation.TWO}>
@@ -17,7 +17,7 @@ function RaceCardList (props) {
           </Card>
         </Box>
       )}
-    </React-Fragment>
+    </React.Fragment>
   )
 }
 
@@ -27,17 +27,17 @@ class RacePanel extends Component {
     this.state = {
       'shortRaces': []
     }
-    this.getRaces = this.getRaces.bind(this)
+    // this.getRaces = this.getRaces.bind(this)
   }
 
-	componentDidMount() {
+  componentDidMount() {
     console.log('RacePanel mounted.')
   }
 
   getRaces = async () => {
     try {
       let config = {
-            headers: {'Authorization': 'Bearer ' + this.props.user.token}
+        headers: {'Authorization': 'Bearer ' + this.props.user.token}
       };
       let races = await axios.get('https://pwd-racetrack/race', config)
       // we got an array of race objects
@@ -52,7 +52,7 @@ class RacePanel extends Component {
     const panelActive = this.props.active ? {} : {'display': 'none'}
 
     return (
-      <React-Fragment>
+      <React.Fragment>
       <Flex justify='center' className='racelistbutton' style={panelActive}>
         <Box p={2}>
           <Button id='getraces' onClick={this.getRaces}
@@ -63,7 +63,7 @@ class RacePanel extends Component {
       <Flex justify='center' className='racepanel' style={panelActive}>
         <RaceCardList races={this.state.shortRaces} />
       </Flex>
-    </React-Fragment>
+    </React.Fragment>
     )
   }
 }

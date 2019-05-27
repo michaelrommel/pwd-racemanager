@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { H3 } from '@blueprintjs/core'
-import {Flex, Box } from 'reflexbox';
+import {Flex, Box } from 'reflexbox'
 
 class UserPanel extends Component {
   constructor (props) {

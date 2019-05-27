@@ -7,14 +7,10 @@ class SessionPanel extends Component {
   constructor (props) {
     super(props)
     this.state = {
-      'user': props.user,
       'showPassword': false,
       'newuser': '',
       'newpass': ''
     }
-    this.handleLoginClick = this.handleLoginClick.bind(this)
-    this.handleLogoutClick = this.handleLogoutClick.bind(this)
-    this.handleLockClick = this.handleLockClick.bind(this)
   }
 
   handleUsernameChange = (e) => {
@@ -26,7 +22,7 @@ class SessionPanel extends Component {
   }
 
   handleLogoutClick = (e) => {
-    console.log('Logging out user: ' + this.state.user)
+    console.log('Logging out user: ' + this.props.user)
     this.setState(
       {
         'user': null,
@@ -45,16 +41,10 @@ class SessionPanel extends Component {
     // Do something to validate the user/pass combination
     try {
       let user = await axios.post('https://pwd-racetrack/auth/local-login',
-        {
-          'username': username,
-          'password': password
-        })
+        { 'username': username,
+          'password': password })
       // we got a user, propagate it to the state
-      this.setState(
-        {
-          'user': user.data
-        }
-      )
+      this.setState({ 'user': user.data })
       this.props.onUserChange(user.data)
     } catch (err) {
       console.log('Error in logging in: ', err)
@@ -66,14 +56,13 @@ class SessionPanel extends Component {
   }
 
   render () {
-    const { showPassword, user } = this.state
-
-    const loggedIn = user === null ? false : true
+    const { showPassword } = this.state
 
     const panelActive = this.props.active ? {} : {'display': 'none'}
 
+    const loggedIn = this.props.user === null ? false : true
     const hiddenIfLoggedIn = loggedIn ? {'display': 'none'} : {}
-    const hiddenIfLoggedOut = loggedIn ? {} : {'display': 'none'} 
+    const hiddenIfLoggedOut = !loggedIn ? {'display': 'none'} : {}
 
     const lockButton = (
       <Tooltip content={`${this.state.showPassword ? "Hide" : "Show"} Password`}>
@@ -96,15 +85,15 @@ class SessionPanel extends Component {
                 <tbody>
                   <tr>
                     <td>User</td>
-                    <td>{this.state.user !== null ? this.state.user.name : ''}</td>
+                    <td>{this.props.user !== null ? this.props.user.name : ''}</td>
                   </tr>
                   <tr>
                     <td>Role</td>
-                    <td>{this.state.user !== null ? this.state.user.role : ''}</td>
+                    <td>{this.props.user !== null ? this.props.user.role : ''}</td>
                   </tr>
                   <tr>
                     <td>Token</td>
-                    <td>{this.state.user !== null ? this.state.user.token : ''}</td>
+                    <td>{this.props.user !== null ? this.props.user.token : ''}</td>
                   </tr>
                 </tbody>
               </HTMLTable>
