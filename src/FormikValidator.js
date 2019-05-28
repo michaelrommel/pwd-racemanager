@@ -10,11 +10,12 @@ class FormikValidator extends Component {
     this.props.validateForm()
   }
 
-  componentDidUpdate () {
-    if (this.firstValue !== this.props.initialValues) {
-      // the form has been re-initialized with new values
+  componentDidUpdate (prevProps, prevState, snapshot) {
+    if (prevProps.initialValues !== this.props.initialValues) {
+      console.log('FormikValidator: initialValues changed')
+      // the form has been re-initialized with new values,
+      // trigger the validation of the field gotten in props
       this.props.setFieldTouched(this.props.fieldName, true, true)
-      this.firstValue = this.props.initialValues
     }
   }
 

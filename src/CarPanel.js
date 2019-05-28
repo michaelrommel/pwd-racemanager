@@ -6,15 +6,14 @@ class CarPanel extends Component {
     super(props)
     this.state = {
     }
-    this.handleClick = this.handleClick.bind(this)
   }
 
   handleClick = (e) => {
-    this.setState( { 'xxx': e.target.value } )
+    this.setState({ 'xxx': e.target.value })
   }
 
   render () {
-    const panelActive = this.props.active ? {} : {'display': 'none'}
+    const panelActive = this.props.active ? {} : { 'display': 'none' }
 
     return (
       <div className='carpanel' style={panelActive}>

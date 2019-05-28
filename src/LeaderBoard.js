@@ -5,15 +5,16 @@ import memoize from 'memoize-one'
 
 function Leaderboardrows (props) {
   const leaders = props.leaderboard
-  if (leaders === undefined || leaders === null) return null
+  if (leaders === undefined || leaders === null) return null
 
   return (
     <React.Fragment>
-      {leaders.map((leader, i) => 
-        <tr key={i + 1}><td>{i + 1}</td>
-            <td>{leader.ow}</td>
-            <td>{leader.cumulatedScore}</td>
-            <td>{leader.cumulatedTime}</td></tr>
+      {leaders.map((leader, i) =>
+        <tr key={i + 1}>
+          <td>{i + 1}</td>
+          <td>{leader.ow}</td>
+          <td>{leader.cumulatedScore}</td>
+          <td>{leader.cumulatedTime}</td></tr>
       )}
     </React.Fragment>
   )
@@ -33,17 +34,18 @@ class LeaderBoard extends Component {
   }
 
   getLeaderboard = async () => {
+    console.log('LeaderBoard: getting latest data')
+    let config = {}
     if (this.props.user) {
-      console.log('LeaderBoard: getting latest data')
-      try {
-        let config = {
-          headers: {'Authorization': 'Bearer ' + this.props.user.token}
-        };
-        let leaderboard = await axios.get('https://pwd-racetrack/race/leaderboard/2018-Quali', config)
-        this.setState({ 'leaderboard': leaderboard.data.splice(0,10) })
-      } catch (err) {
-        console.log('Error getting race list: ', err)
+      config = {
+        headers: { 'Authorization': 'Bearer ' + this.props.user.token }
       }
+    }
+    try {
+      let leaderboard = await axios.get('https://pwd-racetrack/race/leaderboard/2018-Quali', config)
+      this.setState({ 'leaderboard': leaderboard.data.splice(0, 10) })
+    } catch (err) {
+      console.log('Error getting race list: ', err)
     }
   }
 

@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { H3 } from '@blueprintjs/core'
-import {Flex, Box } from 'reflexbox'
+import { Flex, Box } from 'reflexbox'
 
 class UserPanel extends Component {
   constructor (props) {
@@ -11,19 +11,19 @@ class UserPanel extends Component {
   }
 
   handleClick = (e) => {
-    this.setState( { 'xxx': e.target.value } )
+    this.setState({ 'xxx': e.target.value })
   }
 
   render () {
-    const panelActive = this.props.active ? {} : {'display': 'none'}
+    const panelActive = this.props.active ? {} : { 'display': 'none' }
 
     return (
       <Flex className='userpanel' style={panelActive}>
         <Box>
-        <H3>Users</H3>
-        <p className='userpanel'>
-          Manage Pinewood Derby users and admins.
-        </p>
+          <H3>Users</H3>
+          <p className='userpanel'>
+            Manage Pinewood Derby users and admins.
+          </p>
         </Box>
       </Flex>
     )

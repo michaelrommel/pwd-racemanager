@@ -13,15 +13,15 @@ class App extends Component {
 
   changeTheme = () => {
     this.setState((state, props) => ({
-        'darktheme': !state.darktheme
+      'darktheme': !state.darktheme
     }))
   }
 
   render () {
     return (
       <div className={`App ${this.state.darktheme ? 'bp3-dark' : ''}`}>
-        <Navigation 
-          changeTheme={this.changeTheme} 
+        <Navigation
+          changeTheme={this.changeTheme}
           darktheme={this.state.darktheme} />
       </div>
     )

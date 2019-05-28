@@ -41,6 +41,7 @@
     "not op_mini all"
   ],
   "devDependencies": {
+    "babel-eslint": "^10.0.1",
     "standard": "^12.0.1",
     "typescript": "^3.4.5"
   },
@@ -48,6 +49,7 @@
     "env": [
       "mocha"
     ],
+    "parser": "babel-eslint",
     "globals": [
       "describe",
       "context",

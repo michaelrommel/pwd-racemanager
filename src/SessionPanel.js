@@ -35,7 +35,7 @@ function LoginForm (props) {
     <Tooltip content={values.showPassword ? 'Hide Password' : 'Show Password'}>
       <Button
         value={values.showPassword}
-        icon={values.showPassword ? "unlock" : "lock"}
+        icon={values.showPassword ? 'unlock' : 'lock'}
         intent={Intent.NONE}
         onClick={handleLockClick}
       />
@@ -63,9 +63,9 @@ function LoginForm (props) {
         <Flex justify={'center'} align={'center'}>
           <Box p={1} justify={'center'}>
             <Button id='login' onClick={handleSubmit} type='submit'
-              intent={Intent.PRIMARY} large active={true}
+              intent={Intent.PRIMARY} large active
               text={isSubmitting ? '' : 'Login'}
-              disabled={!isValid ? true : false} > 
+              disabled={!isValid}>
               <Box hidden={!isSubmitting}>
                 <Spinner id='spinner' size={Spinner.SIZE_SMALL} />
               </Box>
@@ -89,9 +89,9 @@ class SessionPanel extends Component {
     this.ValidationSchema = getValidationSchema()
   }
 
-	showToast = (msg, intent, icon) => {
-			DisplayToast.show({ 'message': msg, 'intent': intent, 'icon': icon })
-	}
+  showToast = (msg, intent, icon) => {
+    DisplayToast.show({ 'message': msg, 'intent': intent, 'icon': icon })
+  }
 
   handleLogoutClick = (e) => {
     console.log('Sessionpanel: logging out user: ' + this.props.user)
@@ -120,22 +120,22 @@ class SessionPanel extends Component {
   }
 
   render () {
-    const panelActive = this.props.active ? {} : {'display': 'none'}
+    const panelActive = this.props.active ? {} : { 'display': 'none' }
 
-    const loggedIn = this.props.user === null ? false : true
-    const hiddenIfLoggedIn = loggedIn ? {'display': 'none'} : {}
-    const hiddenIfLoggedOut = !loggedIn ? {'display': 'none'} : {}
+    const loggedIn = this.props.user
+    const hiddenIfLoggedIn = loggedIn ? { 'display': 'none' } : {}
+    const hiddenIfLoggedOut = !loggedIn ? { 'display': 'none' } : {}
 
     const initialValues = this.state
 
     return (
       <div className='sessionpanel' style={panelActive}>
         <Flex p={2} align='center' justify='center'>
-          <Box w={2/3} style={hiddenIfLoggedOut}>
+          <Box w={2 / 3} style={hiddenIfLoggedOut}>
             <Card>
               <H5>Session Information</H5>
               <HTMLTable className='sessiontable'>
-                <thead><tr><th width="30%">Key</th><th>Value</th></tr></thead>
+                <thead><tr><th width='30%'>Key</th><th>Value</th></tr></thead>
                 <tbody>
                   <tr><td>Username</td>
                     <td>{this.props.user ? this.props.user.username : ''}</td></tr>
@@ -147,11 +147,11 @@ class SessionPanel extends Component {
               </HTMLTable>
             </Card>
           </Box>
-          <Box w={1/2} style={hiddenIfLoggedIn}>
+          <Box w={1 / 2} style={hiddenIfLoggedIn}>
             <Formik
-              enableReinitialize={true}
+              enableReinitialize
               initialValues={initialValues}
-							validationSchema={this.ValidationSchema}
+              validationSchema={this.ValidationSchema}
               onSubmit={this.handleLoginClick}
               render={LoginForm}
             />
@@ -159,8 +159,8 @@ class SessionPanel extends Component {
         </Flex>
         <Flex p={2} align='center' justify='center'>
           <Box align='center' justify='center'>
-            <Button intent={Intent.PRIMARY} style={hiddenIfLoggedOut} active={true}
-              onClick={this.handleLogoutClick} text='Logout'/>
+            <Button intent={Intent.PRIMARY} style={hiddenIfLoggedOut} active
+              onClick={this.handleLogoutClick} text='Logout' />
           </Box>
         </Flex>
       </div>

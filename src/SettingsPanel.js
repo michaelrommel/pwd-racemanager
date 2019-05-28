@@ -3,7 +3,6 @@ import { Tooltip, FormGroup, InputGroup, Intent, Icon, Button } from '@blueprint
 import { Formik, Form } from 'formik'
 import { Flex, Box } from 'reflexbox'
 import axios from 'axios'
-import memoize from 'memoize-one'
 import FormikValidator from './FormikValidator'
 import { DisplayToast } from './DisplayToast'
 import * as Yup from 'yup'
@@ -63,7 +62,7 @@ function FieldWithError (props) {
     <Tooltip content={`${values.showPassword ? 'Hide' : 'Show'} Password`}>
       <Button
         value={values.showPassword}
-        icon={values.showPassword ? "unlock" : "lock"}
+        icon={values.showPassword ? 'unlock' : 'lock'}
         intent={Intent.NONE}
         onClick={handleLockClick}
       />
@@ -75,7 +74,7 @@ function FieldWithError (props) {
       <Box w={6 / 10} pr={2} >
         <InputGroup id={fieldname} placeholder={placeholder} large
           value={values[fieldname]} onChange={handleChange}
-          rightElement={lock ? LockButton : null} 
+          rightElement={lock ? LockButton : null}
           type={lock && !values.showPassword ? 'password' : 'text'}
           disabled={disabled}
         />
@@ -113,7 +112,7 @@ function AppSettingsForm (props) {
         <FieldWithError
           fieldname={'appState'}
           placeholder={'fresh|configured'}
-          disabled={true}
+          disabled
           handleChange={handleChange}
           values={values}
           errors={errors} />
@@ -143,7 +142,8 @@ function AppSettingsForm (props) {
           handleChange={handleChange}
           setFieldValue={setFieldValue}
           values={values}
-          errors={errors} lock={true} />
+          errors={errors}
+          lock />
       </FormGroup>
 
       <FormGroup
@@ -177,8 +177,8 @@ function AppSettingsForm (props) {
         text={isSubmitting ? 'Saving...' : 'Save'} />
 
       <FormikValidator
-        initialValues={initialValues.rootpwd} 
-        values={values.rootpwd} 
+        initialValues={initialValues.rootpwd}
+        values={values.rootpwd}
         fieldName={'rootpwd'}
         validateForm={validateForm}
         setFieldTouched={setFieldTouched}
@@ -198,36 +198,40 @@ class SettingsPanel extends Component {
       'jwtSecret': '',
       'rootpwd': '',
       'githubClientId': '',
-      'githubClientSecret': ''
+      'githubClientSecret': '',
+      'netReqId': 1
     }
-    // we call a function to return a validation Yup schema
-    // this gives us the ability to pass a state parameter
-    // to the created schema
-    this.ValidationSchema = getValidationSchema(this.state)
   }
 
-  componentDidMount() {
+  componentDidMount () {
     console.log('SettingsPanel: mounted', this.props.user)
-    this.getAppSettings()
+    // we fire off one request to the server to get the
+    // initial values for the form fields based on the
+    // current user, if any.
+    let nextId = this.state.netReqId + 1
+    this.setState({ 'netReqId': nextId })
+    this.getAppSettings(nextId)
   }
 
-  loadNewSettings = memoize(
-    (user) => { 
-      console.log('initiating getAppSettings from render()', this.props.user)
-      this.getAppSettings()
+  componentDidUpdate (prevProps, prevState, snapshot) {
+    // If the user changed, fire off another network request
+    if (this.props.user !== prevProps.user) {
+      let nextId = this.state.netReqId + 1
+      this.setState({ 'netReqId': nextId })
+      this.getAppSettings(nextId)
     }
-  )
+  }
 
-  async getAppSettings() {
+  async getAppSettings (netReqId) {
     let settings
     try {
-      console.log('SettingsPanel: getting application settings: ', this.props.user)
+      console.log('SettingsPanel: get app settings: id:', netReqId, 'user:', this.props.user)
       let config
       if (this.props.user) {
         // a user already logged in, use the user token
         config = {
-          headers: {'Authorization': 'Bearer ' + this.props.user.token}
-        };
+          headers: { 'Authorization': 'Bearer ' + this.props.user.token }
+        }
         console.log('SettingsPanel: path /settings')
         settings = await axios.get('https://pwd-racetrack/admin/settings', config)
       } else {
@@ -235,47 +239,55 @@ class SettingsPanel extends Component {
         console.log('SettingsPanel: path /init')
         settings = await axios.get('https://pwd-racetrack/admin/init')
       }
-      console.log('SettingsPanel: got application settings: ', settings.data.jwtSecret)
-      let newstate ={ 
+      console.log('SettingsPanel: got application settings: ', settings.data.rootpwd)
+      let newstate = {
         'appState': settings.data.appState || '',
         'jwtSecret': settings.data.jwtSecret || '',
         'rootpwd': settings.data.rootpwd || '',
         'githubClientId': settings.data.githubClientId || '',
-        'githubClientSecret': settings.data.githubClientSecret || '',
+        'githubClientSecret': settings.data.githubClientSecret || ''
       }
-      // this sets a new validator with the new values to compare to
-      // especially the rootpwd
-      this.ValidationSchema = getValidationSchema(newstate)
-      // this will trigger a re-render with the new values
-      this.setState(newstate)
-      // if the application state is fresh, let's see if we 
-      // can log in as root user
-      if (newstate.appState === 'fresh' && !this.props.user ) {
+      // this will conditionally update the state and if so,
+      // trigger a re-render with the new values
+      this.setState((state, props) => {
+        if (state.netReqId > netReqId) {
+          // another request has already been fired off,
+          // so ignore the network response we jost got
+          console.log('Ignoring response for', netReqId,
+            'because state already has', state.netReqId,
+            'state: ', newstate)
+          return {}
+        } else {
+          console.log('Accepting response for request for', netReqId,
+            ' state: ', newstate)
+          return newstate
+        }
+      })
+      // if the application state is fresh, let's see if we
+      // can log in as root user, if we are not already logged in
+      if (newstate.appState === 'fresh' && !this.props.user) {
         try {
           let user = await axios.post('https://pwd-racetrack/auth/local-login',
             { 'username': 'root',
               'password': settings.data.rootpwd })
-          // we got a user, propagate it to the state
-          // this.setState({ 'user': user.data })
+          // we got a user, propagate it to the top level state
           this.props.onUserChange(user.data)
           console.log('Settingspanel: logged in as root user: ')
         } catch (err) {
           console.log('Settingspanel: error in logging in as root user: ', err)
         }
       }
-      return newstate
     } catch (err) {
       console.log('Settingspanel: error getting application settings: ', err)
-      return undefined
     }
   }
 
-  async storeAppSettings(settings) {
+  async storeAppSettings (settings) {
     try {
       let config
       console.log('SettingsPanel: storing application settings: ')
       config = {
-        headers: {'Authorization': 'Bearer ' + this.props.user.token}
+        headers: { 'Authorization': 'Bearer ' + this.props.user.token }
       }
       settings.appState = 'configured'
       let response = await axios.post('https://pwd-racetrack/admin/settings', settings, config)
@@ -294,26 +306,24 @@ class SettingsPanel extends Component {
 
   onSubmit = async (values, actions) => {
     try {
-      if (await this.storeAppSettings(values)) { 
+      if (await this.storeAppSettings(values)) {
         this.showToast('Successfully stored settings.', Intent.SUCCESS, 'tick-circle')
       } else {
         this.showToast('Failed to store settings.', Intent.DANGER, 'warning-sign')
       }
-      actions.setSubmitting(false);
+      actions.setSubmitting(false)
     } catch (err) {
       this.showToast('Failed to submit settings.', Intent.DANGER, 'warning-sign')
       actions.setSubmitting(false)
     }
   }
 
-	showToast = (msg, intent, icon) => {
-			DisplayToast.show({ 'message': msg, 'intent': intent, 'icon': icon })
-	}
+  showToast = (msg, intent, icon) => {
+    DisplayToast.show({ 'message': msg, 'intent': intent, 'icon': icon })
+  }
 
   render () {
     const panelActive = this.props.active ? {} : { 'display': 'none' }
-    console.log('SettingsPanel: rendering with ', this.props.user)
-    this.loadNewSettings(this.props.user)
     const initialValues = this.state
 
     return (
@@ -321,9 +331,9 @@ class SettingsPanel extends Component {
         <Flex p={2} align='center' justify='center'>
           <Box w={4 / 5}>
             <Formik
-              enableReinitialize={true}
+              enableReinitialize
               initialValues={initialValues}
-              validationSchema={this.ValidationSchema}
+              validationSchema={getValidationSchema(this.state)}
               onSubmit={this.onSubmit}
               render={AppSettingsForm}
             />
