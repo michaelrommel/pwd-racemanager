@@ -1,6 +1,13 @@
-.App {
+.App.bp3-dark {
   background-color: #283042;
+}
+
+.App {
   min-height: 100vh;
+}
+
+.App .bp3-navbar-group .bp3-switch {
+  margin-bottom: 0;
 }
 
 .logingroup {
@@ -30,7 +37,7 @@
   src: url( './Bree-SH-Headline-Regular.woff2') format('woff2');
 }
 
-.display {
+.display h1, h4{
   text-align: center;
   font-family: "SH Headline", -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
 }
