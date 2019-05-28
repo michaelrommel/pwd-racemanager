@@ -207,30 +207,35 @@ class SettingsPanel extends Component {
   }
 
   componentDidMount() {
-    console.log('SettingsPanel: mounted')
+    console.log('SettingsPanel: mounted', this.props.user)
     this.getAppSettings()
   }
 
   loadNewSettings = memoize(
-    (user) => { this.getAppSettings() }
+    (user) => { 
+      console.log('initiating getAppSettings from render()', this.props.user)
+      this.getAppSettings()
+    }
   )
 
   async getAppSettings() {
     let settings
     try {
-      console.log('SettingsPanel: getting application settings: ')
+      console.log('SettingsPanel: getting application settings: ', this.props.user)
       let config
       if (this.props.user) {
         // a user already logged in, use the user token
         config = {
           headers: {'Authorization': 'Bearer ' + this.props.user.token}
         };
+        console.log('SettingsPanel: path /settings')
         settings = await axios.get('https://pwd-racetrack/admin/settings', config)
       } else {
         // try to get the view for anonymous users
+        console.log('SettingsPanel: path /init')
         settings = await axios.get('https://pwd-racetrack/admin/init')
       }
-      console.log('SettingsPanel: got application settings')
+      console.log('SettingsPanel: got application settings: ', settings.data.jwtSecret)
       let newstate ={ 
         'appState': settings.data.appState || '',
         'jwtSecret': settings.data.jwtSecret || '',
@@ -307,6 +312,7 @@ class SettingsPanel extends Component {
 
   render () {
     const panelActive = this.props.active ? {} : { 'display': 'none' }
+    console.log('SettingsPanel: rendering with ', this.props.user)
     this.loadNewSettings(this.props.user)
     const initialValues = this.state
 
