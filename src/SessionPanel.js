@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { Spinner, FormGroup, Button, Card, InputGroup, Intent, Tooltip, HTMLTable, H5 } from '@blueprintjs/core'
 import { Formik, Form } from 'formik'
 import { Flex, Box } from 'reflexbox'
-import { DisplayToast } from './DisplayToast'
+import DisplayToast from './DisplayToast'
 import axios from 'axios'
 import * as Yup from 'yup'
 

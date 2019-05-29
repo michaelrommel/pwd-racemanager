@@ -3,21 +3,22 @@ import { Switch, Navbar, Button, Alignment, Intent } from '@blueprintjs/core'
 import axios from 'axios'
 import CarPanel from './CarPanel'
 import RacePanel from './RacePanel'
-import SettingsPanel from './SettingsPanel'
 import UserPanel from './UserPanel'
 import DisplayPanel from './DisplayPanel'
+import SettingsPanel from './SettingsPanel'
 import SessionPanel from './SessionPanel'
-import { DisplayToast } from './DisplayToast'
+import DisplayToast from './DisplayToast'
 
 class Navigation extends Component {
   constructor (props) {
     super(props)
 
     this.state = {
-      'panelId': '',
       'appState': '',
+      'panelId': '',
       'user': null,
-      'raceId': ''
+      'raceId': '',
+      'wsconns': []
     }
   }
 
@@ -26,25 +27,28 @@ class Navigation extends Component {
     // rehydrate the state from local storage to initialize the app
     this.rehydrateStateWithLocalStorage()
     // get general configuration of the backend from the network
-    this.getAppSettings()
+    this.getAppState()
     // add event listener to save state to localStorage
     // when user leaves/refreshes the page
     window.addEventListener(
       'beforeunload',
-      this.saveStateToLocalStorage.bind(this)
+      this.saveStateToLocalStorage
     )
+    // initialize the websocket communication
+    this.initWebsocket()
   }
 
   componentWillUnmount () {
     window.removeEventListener(
       'beforeunload',
-      this.saveStateToLocalStorage.bind(this)
+      this.saveStateToLocalStorage
     )
     // saves if component has a chance to unmount
     this.saveStateToLocalStorage()
   }
 
-  rehydrateStateWithLocalStorage () {
+  rehydrateStateWithLocalStorage = () => {
+    console.log('Navigation: restoring state')
     // for all items in state
     for (let key in this.state) {
       // if the key exists in localStorage
@@ -63,7 +67,8 @@ class Navigation extends Component {
     }
   }
 
-  saveStateToLocalStorage () {
+  saveStateToLocalStorage = () => {
+    console.log('Navigation: saving state to localStorage')
     // for every item in React state
     for (let key in this.state) {
       // save to localStorage
@@ -86,24 +91,15 @@ class Navigation extends Component {
   userChange = (user) => {
     console.log('App: changing user to: ', user)
     this.setState({ 'user': user })
-    this.getAppSettings()
+    this.getAppState()
   }
 
-  async getAppSettings () {
+  async getAppState () {
     let settings
     try {
-      console.log('App: getting application settings: ')
-      let config
-      if (this.state.user) {
-        // a user already logged in, use the user token
-        config = {
-          headers: { 'Authorization': 'Bearer ' + this.state.user.token }
-        }
-        settings = await axios.get('https://pwd-racetrack/admin/settings', config)
-      } else {
-        // try to get the view for anonymous users
-        settings = await axios.get('https://pwd-racetrack/admin/init')
-      }
+      console.log('App: getting application state: ')
+      // try to get the view for anonymous users
+      settings = await axios.get('https://pwd-racetrack/admin/init')
       console.log('App: got application state: ', settings)
       this.setState({ 'appState': settings.data.appState })
     } catch (err) {
@@ -123,6 +119,27 @@ class Navigation extends Component {
     } else if (!this.state.user) {
       console.log('App: No current user, direct to login page')
       this.setState({ 'panelId': 'session' })
+    }
+  }
+
+  initWebsocket = async () => {
+    var ws = new window.WebSocket('wss://pwd-racetrack/websocket/attach')
+
+    ws.onerror = function (error) {
+      console.log('ws error')
+      throw (error)
+    }
+
+    ws.onclose = function () {
+      console.log('ws onclose')
+    }
+
+    ws.onopen = function () {
+      ws.send('Connection established. Hello server!')
+    }
+
+    ws.onmessage = function (msg) {
+      console.log(msg)
     }
   }
 

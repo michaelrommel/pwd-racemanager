@@ -4,7 +4,7 @@ import { Formik, Form } from 'formik'
 import { Flex, Box } from 'reflexbox'
 import axios from 'axios'
 import FormikValidator from './FormikValidator'
-import { DisplayToast } from './DisplayToast'
+import DisplayToast from './DisplayToast'
 import * as Yup from 'yup'
 
 const getValidationSchema = (values) => {
