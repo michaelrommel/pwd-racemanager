@@ -5,7 +5,10 @@ import axios from 'axios'
 
 function RaceCardList (props) {
   const races = props.races
-  if (races === undefined || races === null) return null
+  if (races === undefined ||
+    races === null ||
+    races.length === 0
+  ) return null
 
   return (
     <React.Fragment>

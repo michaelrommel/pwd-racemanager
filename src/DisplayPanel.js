@@ -1,20 +1,11 @@
 import React, { Component } from 'react'
-import { H1, H4 } from '@blueprintjs/core'
+import { H1, H4, Intent, Tag } from '@blueprintjs/core'
 import { Flex, Box } from 'reflexbox'
-import LeaderBoard from './LeaderBoard'
-import HighScore from './HighScore'
+import Leaderboard from './Leaderboard'
+import Highscore from './Highscore'
+import Heat from './Heat'
 
 class DisplayPanel extends Component {
-  constructor (props) {
-    super(props)
-    this.state = {
-    }
-  }
-
-  componentDidMount () {
-    console.log('DisplayPanel: mounted.')
-  }
-
   render () {
     const panelActive = this.props.active ? {} : { 'display': 'none' }
 
@@ -27,32 +18,41 @@ class DisplayPanel extends Component {
             </Box>
           </Flex>
           <Flex w={1}>
-            <Box w={1 / 3}>
+            <Box w={15 / 40}>
               <Flex w={1} column>
-                <Box w={1} p={1} align='stretch' className='displaysectionleft'>
-                  <H4>Current Race</H4>
+                <Box w={1} p={2} className='displaysectionleft'>
+                  <Tag large round intent={Intent.PRIMARY}><strong>{this.props.raceId}</strong></Tag>
                 </Box>
                 <Box w={1} p={1} align='stretch' className='displaysectionleft'>
-                  <H4>Next Race</H4>
-                </Box>
-              </Flex>
-            </Box>
-            <Box w={1 / 3} align='stretch' className='displaysectionright'>
-              <Flex w={1}>
-                <Box w={1} p={1}>
-                  <H4>Leaderboard</H4>
+                  <H4>Current Heat</H4>
                   <div align='center'>
-                    <LeaderBoard user={this.props.user} />
+                    <Heat heat={this.props.displayProps.currentHeat} />
+                  </div>
+                </Box>
+                <Box w={1} p={1} align='stretch' className='displaysectionleft'>
+                  <H4>Next Heat</H4>
+                  <div align='center'>
+                    <Heat heat={this.props.displayProps.nextHeat} isNext />
                   </div>
                 </Box>
               </Flex>
             </Box>
-            <Box w={1 / 3} align='stretch' className='displaysectionright'>
+            <Box w={12 / 40} align='stretch' className='displaysectionright'>
+              <Flex w={1}>
+                <Box w={1} p={1}>
+                  <H4>Leaderboard</H4>
+                  <div align='center'>
+                    <Leaderboard leaderboard={this.props.displayProps.leaderboard} />
+                  </div>
+                </Box>
+              </Flex>
+            </Box>
+            <Box w={13 / 40} align='stretch' className='displaysectionright'>
               <Flex w={1}>
                 <Box w={1} p={1}>
                   <H4>Highscores</H4>
                   <div align='center'>
-                    <HighScore user={this.props.user} />
+                    <Highscore highscore={this.props.displayProps.highscore} />
                   </div>
                 </Box>
               </Flex>

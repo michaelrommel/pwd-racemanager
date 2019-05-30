@@ -271,7 +271,7 @@ class SettingsPanel extends Component {
             { 'username': 'root',
               'password': settings.data.rootpwd })
           // we got a user, propagate it to the top level state
-          this.props.onUserChange(user.data)
+          this.props.changeUser(user.data)
           console.log('Settingspanel: logged in as root user: ')
         } catch (err) {
           console.log('Settingspanel: error in logging in as root user: ', err)

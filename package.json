@@ -29,8 +29,6 @@
     "react-dom": "^16.8.6",
     "react-scripts": "^3.0.1",
     "reflexbox": "^3.0.1",
-    "socket.io": "^2.2.0",
-    "watershed": "^0.4.0",
     "yup": "^0.27.0"
   },
   "eslintConfig": {

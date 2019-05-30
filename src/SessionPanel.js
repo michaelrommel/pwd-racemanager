@@ -96,7 +96,7 @@ class SessionPanel extends Component {
   handleLogoutClick = (e) => {
     console.log('Sessionpanel: logging out user: ' + this.props.user)
     this.setState(this.emptystate)
-    this.props.onUserChange(null)
+    this.props.changeUser(null)
   }
 
   handleLoginClick = async (values, actions) => {
@@ -108,7 +108,7 @@ class SessionPanel extends Component {
       let user = await axios.post('https://pwd-racetrack/auth/local-login',
         { 'username': username,
           'password': password })
-      this.props.onUserChange(user.data)
+      this.props.changeUser(user.data)
       actions.setSubmitting(false)
       this.setState(this.emptystate)
       actions.resetForm(this.emptyState)
