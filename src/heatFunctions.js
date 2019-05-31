@@ -32,11 +32,6 @@ const getCurrentHeat = async (urlprefix, user, raceId) => {
     let laneStatus = await getLaneStatus(urlprefix, user, raceId)
     // now mix in the status information into to original heat info
     for (let i = 0; i < lanes.results.length; i++) {
-      // insert an unknown status field into the structure, until we get
-      // updates from the racetrack
-      if (lanes.results[i].status === undefined) {
-        lanes.results[i].status = 'unknown'
-      }
       for (let j = 0; j < laneStatus.length; j++) {
         if (laneStatus[j].lane === i) {
           // this is the status for the i-th lane

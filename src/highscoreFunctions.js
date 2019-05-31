@@ -11,7 +11,7 @@ const getHighscore = async (urlprefix, user, raceId) => {
   try {
     let url = urlprefix + '/race/highscore/' + raceId
     let result = await axios.get(url, config)
-    return result.data.splice(0, 15)
+    return result.data.splice(0, 20)
   } catch (err) {
     console.log('Error getting highscore: ', err)
   }

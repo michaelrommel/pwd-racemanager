@@ -29,27 +29,30 @@ function Heatrows (props) {
 
   return (
     <React.Fragment>
-      {heats.results.map((lane, i) =>
-        <tr key={i + 1}>
-          <td>{i + 1}</td>
-          <td>{lane.ow}</td>
-          <td>{laneColour[i]}</td>
-          {!props.isNext
-            ? <>
-              <td>
-                <Tag round
-                  icon={statusIcons[lane.status]}
-                  intent={statusIntents[lane.status]}
-                >
-                  {lane.status}
-                </Tag>
-              </td>
-              <td>{lane.t}</td>
-              <td>{lane.score}</td>
-              </>
-            : null}
-        </tr>
-      )}
+      {heats.results.map((lane, i) => {
+        lane.status = lane.status || 'unknown'
+        return (
+          <tr key={i + 1}>
+            <td>{i + 1}</td>
+            <td>{lane.ow}</td>
+            <td>{laneColour[i]}</td>
+            {!props.isNext
+              ? <>
+                <td>
+                  <Tag round
+                    icon={statusIcons[lane.status]}
+                    intent={statusIntents[lane.status]}
+                  >
+                    {lane.status}
+                  </Tag>
+                </td>
+                <td>{lane.t}</td>
+                <td>{lane.score}</td>
+                </>
+              : null}
+          </tr>
+        )
+      })}
     </React.Fragment>
   )
 }
@@ -59,6 +62,8 @@ class Heat extends Component {
     super(props)
     this.heatStatusIntents = {
       'nok': Intent.DANGER,
+      'initializing': Intent.NONE,
+      'complete': Intent.PRIMARY,
       'running': Intent.WARNING,
       'just finished': Intent.SUCCESS
     }

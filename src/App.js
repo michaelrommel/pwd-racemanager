@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
-import axios from 'axios'
 import { Intent } from '@blueprintjs/core'
+import axios from 'axios'
+import ReconnectingWebSocket from 'reconnecting-websocket'
 import Navigation from './Navigation'
 import Panels from './Panels'
 import DisplayToast from './DisplayToast'
@@ -118,42 +119,54 @@ class App extends Component {
   }
 
   initWebsocket = async (processMessageCallback) => {
-    let wsurlprefix = this.state.urlprefix.replace('https', 'wss')
-    var ws = new window.WebSocket(wsurlprefix + '/websocket/attach')
+    const wsurlprefix = this.state.urlprefix.replace('https', 'wss')
+    const config = {
+      connectionTimeout: 2000,
+      minreconnectionDelay: 250,
+      maxReconnectionDelay: 10000,
+      reconnectionDelayGrowFactor: 1.3,
+      maxRetries: Infinity,
+      debug: false
+    }
+    var ws = new ReconnectingWebSocket(wsurlprefix + '/websocket/attach', [], config)
 
     ws.onerror = function (error) {
-      console.log('ws error')
-      throw (error)
+      console.log('App::websocket::onerror: websocket error reported:', error)
     }
 
     ws.onclose = function () {
-      console.log('ws onclose')
+      console.log('App::websocket::onclose: server closed websocket connection')
     }
 
     ws.onopen = function () {
-      ws.send('Connection established. Hello server!')
+      console.log('App::websocket::onopen: established connection to websocket server')
+      ws.send('pwd-racemananager attached!')
     }
 
     ws.onmessage = function (msg) {
-      console.log(msg)
+      console.log('App::websocket::onmessage: received message from websocket server', msg)
       if (msg.data) {
         processMessageCallback(msg.data)
       }
     }
   }
 
-  updateRacetrackStatus = (websocketMessage) => {
+  updateRacetrackStatus = (websocketData) => {
+    // this is a map of functions to call, when a particular message arrives
     const wsmap = {
       'lanestatus': this.mergeLaneStatus,
-      'leaderboard': (lb) => { this.setState({ 'leaderboard': lb.data.splice(0, 15) }) },
-      'highscore': (hs) => { this.setState({ 'highscore': hs.data.splice(0, 15) }) }
+      'currentheat': this.mergeHeat,
+      'nextheat': (nh) => { this.setState({ 'nextHeat': nh.data }) },
+      'leaderboard': (lb) => { this.setState({ 'leaderboard': lb.data.splice(0, 20) }) },
+      'highscore': (hs) => { this.setState({ 'highscore': hs.data.splice(0, 20) }) }
     }
     // we need to parse the message into an object
-    let data = JSON.parse(websocketMessage)
+    let data = JSON.parse(websocketData)
     if (data.raceId === this.state.raceId) {
       // the event really relates to this race
       let cb = wsmap[data.type]
       if (cb && typeof cb === 'function') {
+        console.log('App::updateRacetrackStatus: setting data from ws message of type', data.type)
         cb(data)
       } else {
         console.log('App::updateRacetrackStatus: stray message of type', data.type)
@@ -161,6 +174,19 @@ class App extends Component {
     } else {
       console.log('App::updateRacetrackStatus: stray message for race', data.raceId)
     }
+  }
+
+  mergeHeat = (heat) => {
+    console.log(JSON.stringify(heat, null, 2))
+    let lanes = this.state.currentHeat
+    if (lanes === undefined || lanes === null) return
+    // now mix in the status information into to original heat info
+    for (let i = 0; i < lanes.results.length; i++) {
+      Object.assign(lanes.results[i], heat.data.results[i])
+    }
+    lanes.status = heat.data.status
+    lanes.heat = heat.data.heat
+    this.setState({ 'currentHeat': lanes })
   }
 
   mergeLaneStatus = (laneStatus) => {
@@ -177,6 +203,7 @@ class App extends Component {
         }
       }
     }
+    lanes.status = laneStatus.data.status
     this.setState({ 'currentHeat': lanes })
   }
 

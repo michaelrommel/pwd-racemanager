@@ -8,6 +8,8 @@ function Leaderboardrows (props) {
     leaders.length === 0
   ) return null
 
+  console.log('Leaderboard::Leaderboardrows:: iterating over', leaders)
+
   return (
     <React.Fragment>
       {leaders.map((leader, i) =>
