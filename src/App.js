@@ -172,7 +172,7 @@ class App extends Component {
         console.log('App::updateRacetrackStatus: stray message of type', data.type)
       }
     } else {
-      console.log('App::updateRacetrackStatus: stray message for race', data.raceId)
+      console.log('App::updateRacetrackStatus: stray or malformed message:', data)
     }
   }
 
@@ -191,6 +191,10 @@ class App extends Component {
 
   mergeLaneStatus = (laneStatus) => {
     console.log(JSON.stringify(laneStatus, null, 2))
+    if (laneStatus.data.heat !== this.state.currentHeat.heat) {
+      console.log('ignoring lane status for not current heat, racetrack out of sync')
+      return
+    }
     let lanes = this.state.currentHeat
     if (lanes === undefined || lanes === null) return
     // now mix in the status information into to original heat info
