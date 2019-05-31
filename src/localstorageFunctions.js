@@ -19,6 +19,7 @@ const rehydrateStateWithLocalStorage = (moduleName, stateOrGetStateCallback) => 
       let value = window.localStorage.getItem(lskey)
       // parse the localStorage string and setState
       try {
+        console.log('localstorageFunctions::rehydrate: parsing', lskey, value)
         value = JSON.parse(value)
         newState[key] = value
       } catch (e) {

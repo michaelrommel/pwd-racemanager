@@ -21,7 +21,8 @@ function Heatrows (props) {
   const heats = props.heat
   if (heats === undefined ||
     heats === null ||
-    heats.length === 0
+    heats.results === undefined ||
+    heats.results.length === 0
   ) return null
 
   console.log('Heat::Heatrows:: iterating over', heats.results)

@@ -15,13 +15,14 @@ class App extends Component {
   constructor (props) {
     super(props)
     // get the environment
-    let environment = process.env.REACT_APP_ENVIRONMENT
-    let nodeEnv = process.env.NODE_ENV
+    let reactAppVersion = process.env.REACT_APP_VERSION || ''
+    let nodeEnv = process.env.NODE_ENV || ''
     this.state = {
       'darktheme': true,
-      'environment': environment,
+      'version': reactAppVersion,
+      'environment': nodeEnv,
       'urlprefix': (nodeEnv === 'development')
-        ? 'https://pwd-racetrack' : '',
+        ? 'https://pwd-racetrack' : window.location.protocol + '//' + window.location.hostname,
       'appState': '',
       'panelId': '',
       'wsconns': [],
@@ -32,12 +33,19 @@ class App extends Component {
       'leaderboard': null,
       'highscore': null
     }
+    this.dontrestore = [
+      'environment',
+      'urlprefix'
+    ]
   }
 
   componentDidMount () {
     console.log('App: mounted')
     // rehydrate the state from local storage to initialize the app
     let newState = rehydrateStateWithLocalStorage('app', this.state)
+    for (let key of this.dontrestore) {
+      delete newState[key]
+    }
     this.setState(newState)
     // add event listener to save state to localStorage
     // when user leaves/refreshes the page
@@ -158,6 +166,7 @@ class App extends Component {
   mergeLaneStatus = (laneStatus) => {
     console.log(JSON.stringify(laneStatus, null, 2))
     let lanes = this.state.currentHeat
+    if (lanes === undefined || lanes === null) return
     // now mix in the status information into to original heat info
     for (let i = 0; i < lanes.results.length; i++) {
       for (let j = 0; j < laneStatus.data.lanes.length; j++) {
@@ -177,17 +186,22 @@ class App extends Component {
     this.setState({ 'raceId': raceId })
     // now can parallelize these requests, use var instead of state
     // as it might have not yet updated due to the async nature of React
+    console.log('App::getRacetrackStatus: getting current heat')
     let currentHeat = getCurrentHeat(this.state.urlprefix, this.state.user, raceId)
+    console.log('App::getRacetrackStatus: getting next heat')
     let nextHeat = getNextHeat(this.state.urlprefix, this.state.user, raceId)
+    console.log('App::getRacetrackStatus: getting leaderboard')
     let leaderboard = getLeaderboard(this.state.urlprefix, this.state.user, raceId)
+    console.log('App::getRacetrackStatus: getting highscore')
     let highscore = getHighscore(this.state.urlprefix, this.state.user, raceId)
     // assemble the state once all promises returned
     let newState = {
       'currentHeat': await currentHeat,
-      'nextHeat': await nextHeat,
+      'nextHeat': await nextHeat || [],
       'leaderboard': await leaderboard,
       'highscore': await highscore
     }
+    console.log('App::getRacetrackStatus: got racetrack status, setting state')
     // once we have the new state complete, update the state
     this.setState(newState)
   }

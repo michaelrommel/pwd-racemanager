@@ -53,7 +53,7 @@ class Navigation extends Component {
           <Button id='races' onClick={this.toRaces} className='navigation-button'
             intent={this.props.panelId === 'races' ? Intent.PRIMARY : Intent.NONE}
             disabled={!this.props.user}
-            large={false} type='button' icon='horizontal-bar-chart' text='Races' />
+            large={false} type='button' icon='dashboard' text='Races' />
           <Button id='users' onClick={this.toUsers} className='navigation-button'
             intent={this.props.panelId === 'users' ? Intent.PRIMARY : Intent.NONE}
             disabled={!this.props.user}
