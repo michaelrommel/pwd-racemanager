@@ -37,6 +37,8 @@ class Panels extends Component {
     return (
       <React.Fragment>
         <CarPanel active={this.props.panelId === 'cars'}
+          urlprefix={this.props.urlprefix}
+          raceId={this.props.raceId}
           user={this.props.user} />
         <RacePanel active={this.props.panelId === 'races'}
           user={this.props.user}

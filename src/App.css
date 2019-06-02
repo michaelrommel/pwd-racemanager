@@ -21,6 +21,15 @@
   margin-top: 1.5em;
 }
 
+/* The classes for the Car Panel */
+.pwd-carform-rfid {
+  padding-bottom: 0;
+}
+
+.pwd-carform-details {
+  padding-top: 0;
+}
+
 /* The classes for the Navigation Panel */
 .navigation-button {
   margin: 0px 2px 0px 2px;

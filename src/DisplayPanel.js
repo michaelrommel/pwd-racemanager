@@ -13,7 +13,9 @@ class DisplayPanel extends Component {
       <Flex className='display' style={panelActive}>
         <Box w={1}>
           <Flex w={1} justify='center'>
-            <Box w={1} p={1} align='center' justify='center' className='displaybanner'>
+            <Box w={1} p={1} align='center'
+              justify='center'
+              className='displaybanner'>
               <H1>SRS Pinewood Derby</H1>
             </Box>
           </Flex>
@@ -21,7 +23,9 @@ class DisplayPanel extends Component {
             <Box w={15 / 40}>
               <Flex w={1} column>
                 <Box w={1} p={2} className='displaysectionleft'>
-                  <Tag large round intent={Intent.PRIMARY}><strong>{this.props.raceId}</strong></Tag>
+                  <Tag large round intent={Intent.PRIMARY}>
+                    <strong>{this.props.raceId}</strong>
+                  </Tag>
                 </Box>
                 <Box w={1} p={1} align='stretch' className='displaysectionleft'>
                   <H4>Current Heat</H4>
