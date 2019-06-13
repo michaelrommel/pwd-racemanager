@@ -39,6 +39,7 @@ class Panels extends Component {
         <CarPanel active={this.props.panelId === 'cars'}
           urlprefix={this.props.urlprefix}
           raceId={this.props.raceId}
+          scaleIp={this.props.scaleIp}
           user={this.props.user} />
         <RacePanel active={this.props.panelId === 'races'}
           user={this.props.user}
@@ -53,6 +54,8 @@ class Panels extends Component {
           displayProps={this.props.displayProps} />
         <SettingsPanel active={this.props.panelId === 'settings'}
           user={this.props.user}
+          scaleIp={this.props.scaleIp}
+          changeScaleIp={this.props.changeScaleIp}
           changeUser={this.props.changeUser} />
         <SessionPanel active={this.props.panelId === 'session'}
           user={this.props.user}

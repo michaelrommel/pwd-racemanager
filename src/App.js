@@ -28,6 +28,7 @@ class App extends Component {
       'panelId': '',
       'wsconns': [],
       'user': null,
+      'scaleIp': '123',
       'raceId': null,
       'currentHeat': null,
       'nextHeat': null,
@@ -84,6 +85,7 @@ class App extends Component {
 
   changePanel = (panelId) => { this.setState({ 'panelId': panelId }) }
   changeRace = (raceId) => { this.setState({ 'raceId': raceId }) }
+  changeScaleIp = (scaleIp) => { this.setState({ 'scaleIp': scaleIp }) }
   changeUser = (user) => {
     console.log('App: changing user to: ', user)
     this.setState({ 'user': user })
@@ -262,10 +264,12 @@ class App extends Component {
         <Panels
           changeRace={this.changeRace}
           changeUser={this.changeUser}
+          changeScaleIp={this.changeScaleIp}
           panelId={this.state.panelId}
           urlprefix={this.state.urlprefix}
           user={this.state.user}
           raceId={this.state.raceId}
+          scaleIp={this.state.scaleIp}
           displayProps={displayProps}
         />
       </div>

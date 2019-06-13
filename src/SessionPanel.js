@@ -160,7 +160,7 @@ class SessionPanel extends Component {
         <Flex p={2} align='center' justify='center'>
           <Box align='center' justify='center'>
             <Button intent={Intent.PRIMARY} style={hiddenIfLoggedOut} active
-              onClick={this.handleLogoutClick} text='Logout' />
+              large onClick={this.handleLogoutClick} text='Logout' />
           </Box>
         </Flex>
       </div>

@@ -43,6 +43,38 @@ const getValidationSchema = (values) => {
   )
 }
 
+function ScaleSettingsForm (props) {
+  const {
+    isSubmitting,
+    handleChange,
+    handleSubmit,
+    values,
+    errors
+  } = props
+
+  return (
+    <Form>
+      <FormGroup
+        helperText={'IP address of the Pinewood Derby race scale.'}
+        label={'Scale IP address'}
+        labelFor='scaleIp'
+        labelInfo={''} >
+        <FieldWithError
+          fieldname={'scaleIp'}
+          placeholder={'192.168.10.10'}
+          handleChange={handleChange}
+          values={values}
+          errors={errors} />
+      </FormGroup>
+
+      <Button className={'savebutton'} id='saveScaleSettings' onClick={handleSubmit} type='submit'
+        intent={Intent.PRIMARY} large
+        text={isSubmitting ? 'Saving...' : 'Save Scale IP'} />
+
+    </Form>
+  )
+}
+
 function AppSettingsForm (props) {
   const {
     isSubmitting,
@@ -126,10 +158,6 @@ function AppSettingsForm (props) {
           errors={errors} />
       </FormGroup>
 
-      <Button className={'savebutton'} id='saveSettings' onClick={handleSubmit} type='submit'
-        intent={Intent.PRIMARY} large
-        text={isSubmitting ? 'Saving...' : 'Save'} />
-
       <FormikValidator
         initialValues={initialValues.rootpwd}
         values={values.rootpwd}
@@ -137,6 +165,11 @@ function AppSettingsForm (props) {
         validateForm={validateForm}
         setFieldTouched={setFieldTouched}
       />
+
+      <Button className={'savebutton'} id='saveAppSettings' onClick={handleSubmit} type='submit'
+        intent={Intent.PRIMARY} large
+        text={isSubmitting ? 'Saving...' : 'Save Racetrack Configuration'} />
+
     </Form>
   )
 }
@@ -258,38 +291,94 @@ class SettingsPanel extends Component {
     }
   }
 
-  onSubmit = async (values, actions) => {
+  async connectScale (ip) {
+    try {
+      let config
+      console.log('SettingsPanel: connect to scale: ')
+      config = {
+        headers: { 'Authorization': 'Bearer ' + this.props.user.token }
+      }
+      let response = await axios.get('http://' + ip + ':1337/info', config)
+      if (response.data.success) {
+        // success getting info from scale
+        this.setState({ 'scaleIp': ip })
+      }
+      return true
+    } catch (err) {
+      console.log('Settingspanel: error connecting to scale: ', err)
+      return false
+    }
+  }
+
+  onSubmitApp = async (values, actions) => {
     try {
       if (await this.storeAppSettings(values)) {
-        this.showToast('Successfully stored settings.', Intent.SUCCESS, 'tick-circle')
+        this.showToast('Successfully stored settings',
+          Intent.SUCCESS, 'tick-circle', 2000)
       } else {
-        this.showToast('Failed to store settings.', Intent.DANGER, 'warning-sign')
+        this.showToast('Failed to store settings',
+          Intent.DANGER, 'warning-sign', 5000)
       }
       actions.setSubmitting(false)
     } catch (err) {
-      this.showToast('Failed to submit settings.', Intent.DANGER, 'warning-sign')
+      this.showToast('Failed to submit settings',
+        Intent.DANGER, 'warning-sign', 5000)
       actions.setSubmitting(false)
     }
   }
 
-  showToast = (msg, intent, icon) => {
-    DisplayToast.show({ 'message': msg, 'intent': intent, 'icon': icon })
+  onSubmitScale = async (values, actions) => {
+    try {
+      if (await this.connectScale(values.scaleIp)) {
+        this.showToast('Successfully connnected scale',
+          Intent.SUCCESS, 'tick-circle', 2000)
+        this.props.changeScaleIp(values.scaleIp)
+      } else {
+        this.showToast('Failed to get info from scale',
+          Intent.DANGER, 'warning-sign', 5000)
+      }
+      actions.setSubmitting(false)
+    } catch (err) {
+      this.showToast('Failed to connect to scale',
+        Intent.DANGER, 'warning-sign', 5000)
+      actions.setSubmitting(false)
+    }
+  }
+
+  showToast = (msg, intent, icon, timeout) => {
+    DisplayToast.show({
+      'message': msg,
+      'intent': intent,
+      'icon': icon,
+      'timeout': timeout
+    })
   }
 
   render () {
     const panelActive = this.props.active ? {} : { 'display': 'none' }
-    const initialValues = this.state
+    const initialAppValues = this.state
+    const initialScaleValues = {
+      'scaleIp': this.props.scaleIp
+    }
 
     return (
       <div className='settingspanel' style={panelActive}>
-        <Flex p={2} align='center' justify='center'>
-          <Box w={4 / 5}>
+        <Flex p={2} align='top'>
+          <Box w={1 / 2}>
             <Formik
               enableReinitialize
-              initialValues={initialValues}
+              initialValues={initialAppValues}
               validationSchema={getValidationSchema(this.state)}
-              onSubmit={this.onSubmit}
+              onSubmit={this.onSubmitApp}
               render={AppSettingsForm}
+            />
+          </Box>
+          <Box w={1 / 2}>
+            <Formik
+              enableReinitialize
+              initialValues={initialScaleValues}
+              onSubmit={this.onSubmitScale}
+              render={ScaleSettingsForm}
             />
           </Box>
         </Flex>

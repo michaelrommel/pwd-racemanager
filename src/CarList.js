@@ -20,13 +20,13 @@ function CarCardList (props) {
         let code = getCodeForName(car[2])
         if (car[3]) {
           tags = car[3].map(
-            (tag) => <Tag round intent={Intent.PRIMARY}>{tag}</Tag>)
+            (tag) => <Tag key={tag} round intent={Intent.PRIMARY}>{tag}</Tag>)
         } else {
           tags = ''
         }
         return (
           <Box p={1} w={1 / 3} key={car[0]}>
-            <Card key={car[0]} elevation={Elevation.TWO}>
+            <Card elevation={Elevation.TWO}>
               <Flex w={1} p={0}>
                 <Box>
                   <i className={'flag-icons ' + code} />

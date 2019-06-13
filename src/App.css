@@ -17,8 +17,9 @@
   margin-bottom: 1.5em;
 }
 
-.savebutton {
+.formbutton {
   margin-top: 1.5em;
+  margin-bottom: 15px;
 }
 
 /* The classes for the Car Panel */
@@ -28,6 +29,13 @@
 
 .pwd-carform-details {
   padding-top: 0;
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
+  border-bottom-color: #777777;
+}
+
+.save-button-box {
+  align-self: flex-end;
 }
 
 /* The classes for the Navigation Panel */
@@ -40,7 +48,7 @@
 }
 
 .bp3-navbar.pwd-development {
-  background-color: #ff7777;
+  background-color: #fff0f0;
 }
 
 /* The classes for the SessionPanel */

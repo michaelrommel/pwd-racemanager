@@ -39,12 +39,39 @@ const CarForm = (props) => {
     setFieldTouched,
     setFieldValue,
     values,
-    errors
+    errors,
+    user,
+    scaleIp
   } = props
+
+  const showToast = (msg, intent, icon, timeout) => {
+    DisplayToast.show({
+      'message': msg,
+      'intent': intent,
+      'icon': icon,
+      'timeout': timeout
+    })
+  }
 
   const handleTagChange = (tags) => {
     setFieldValue('races', tags)
     setFieldValue('racesInput', '')
+  }
+
+  const handleGetCar = async () => {
+    try {
+      let config = {
+        headers: { 'Authorization': 'Bearer ' + user.token }
+      }
+      let response = await axios.get(
+        'http://' + scaleIp + ':1337/info', config)
+      setFieldValue('rf', response.data.rfid)
+      setFieldValue('weight', response.data.weight)
+    } catch (err) {
+      console.log('CarPanel: Could not get car details from scale!')
+      showToast('Could not connect to scale!', Intent.DANGER,
+        'warning-sign', 5000)
+    }
   }
 
   const handleTagClear = () => handleTagChange([])
@@ -60,7 +87,7 @@ const CarForm = (props) => {
   return (
     <Form>
       <Flex p={1} className='pwd-carform-rfid'>
-        <Box w={1 / 3} px={1}>
+        <Box w={8 / 20} px={1}>
           <FormGroup
             label={'Car RFID'}
             labelFor='rf'
@@ -73,10 +100,31 @@ const CarForm = (props) => {
               errors={errors} />
           </FormGroup>
         </Box>
+        <Box w={9 / 20} px={1}>
+          <FormGroup
+            label={'Weight'}
+            labelFor='weight'
+            labelInfo={''} >
+            <FieldWithError
+              fieldname={'weight'}
+              placeholder={'Weight'}
+              handleChange={handleChange}
+              disabled
+              values={values}
+              errors={errors} />
+          </FormGroup>
+        </Box>
+        <Box w={3 / 20} px={1}>
+          <Button className={'formbutton'}
+            id='getrfid' onClick={handleGetCar}
+            type='button'
+            intent={Intent.NONE} large fill
+            text={isSubmitting ? 'Getting...' : 'Get car details'} />
+        </Box>
       </Flex>
 
       <Flex p={1} justify='flex-start' className='pwd-carform-details'>
-        <Box w={1 / 3} px={1}>
+        <Box w={8 / 20} px={1}>
           <FormGroup
             label={'Owner\'s Full Name'}
             labelFor='name'
@@ -115,7 +163,7 @@ const CarForm = (props) => {
           </FormGroup>
         </Box>
 
-        <Box w={1 / 3} px={1}>
+        <Box w={9 / 20} px={1}>
           <FormGroup
             label={'Material Number'}
             labelFor='mn'
@@ -128,7 +176,6 @@ const CarForm = (props) => {
               values={values}
               errors={errors} />
           </FormGroup>
-
           <FormGroup
             label={'Serial Number'}
             labelFor='sn'
@@ -140,11 +187,10 @@ const CarForm = (props) => {
               values={values}
               errors={errors} />
           </FormGroup>
-
           <FormGroup
             label={'Races'}
             labelFor='races'
-            labelInfo={'(optional)'} >
+            labelInfo={''} >
             <TagInput
               large
               addOnBlur
@@ -168,11 +214,11 @@ const CarForm = (props) => {
           />
         </Box>
 
-        <Box>
-          <Button className={'savebutton'}
+        <Box w={3 / 20} px={1} className={'save-button-box'}>
+          <Button className={'formbutton'}
             id='saveCar' onClick={handleSubmit}
             type='button'
-            intent={Intent.PRIMARY} large
+            intent={Intent.PRIMARY} large fill
             text={isSubmitting ? 'Saving...' : 'Save car'} />
         </Box>
       </Flex>
@@ -185,6 +231,7 @@ class NewCarFormCollapse extends Component {
     super(props)
     this.state = {
       'rf': '',
+      'weight': 0,
       'ow': '',
       'name': '',
       'country': '',
@@ -209,13 +256,13 @@ class NewCarFormCollapse extends Component {
       delete car.racesInput
       let response = await axios.post(
         this.props.urlprefix + '/car/' + car.rf, car, config)
-      console.log('SettingsPanel: stored car:', response)
+      console.log('CarPanel: stored car:', response)
       if (response.data.success) {
         // success storing the new settings
       }
       return true
     } catch (err) {
-      console.log('Settingspanel: error storing application settings: ', err)
+      console.log('Carpanel: error storing application settings: ', err)
       return false
     }
   }
@@ -224,22 +271,27 @@ class NewCarFormCollapse extends Component {
     try {
       if (await this.saveCar(values)) {
         this.showToast('Successfully saved the car.',
-          Intent.SUCCESS, 'tick-circle')
+          Intent.SUCCESS, 'tick-circle', 2000)
         this.props.toggleCarlistRefresh()
       } else {
         this.showToast('Failed to save the car.',
-          Intent.DANGER, 'warning-sign')
+          Intent.DANGER, 'warning-sign', 5000)
       }
       actions.setSubmitting(false)
     } catch (err) {
       this.showToast('Failed to submit the car.',
-        Intent.DANGER, 'warning-sign')
+        Intent.DANGER, 'warning-sign', 5000)
       actions.setSubmitting(false)
     }
   }
 
-  showToast = (msg, intent, icon) => {
-    DisplayToast.show({ 'message': msg, 'intent': intent, 'icon': icon })
+  showToast = (msg, intent, icon, timeout) => {
+    DisplayToast.show({
+      'message': msg,
+      'intent': intent,
+      'icon': icon,
+      'timeout': timeout
+    })
   }
 
   render () {
@@ -251,7 +303,9 @@ class NewCarFormCollapse extends Component {
         initialValues={initialValues}
         validationSchema={getValidationSchema()}
         onSubmit={this.onSubmit}
-        component={CarForm}
+        component={
+          (formikProps) => <CarForm {...formikProps} {...this.props} />
+        }
       />
     )
   }
@@ -284,6 +338,7 @@ class CarPanel extends Component {
             user={this.props.user}
             urlprefix={this.props.urlprefix}
             raceId={this.props.raceId}
+            scaleIp={this.props.scaleIp}
             toggleCarlistRefresh={this.toggleCarlistRefresh}
           />
         </Collapse>
@@ -299,7 +354,7 @@ class CarPanel extends Component {
           <Box w={3 / 20} p={1}>
             <Button onClick={this.openCarEditPanel}
               fill
-              intent={Intent.SUCCESS}>
+              intent={Intent.NONE}>
               {this.state.editIsOpen ? 'Close panel' : 'Add new car'}
             </Button>
           </Box>
