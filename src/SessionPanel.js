@@ -105,7 +105,8 @@ class SessionPanel extends Component {
 
     console.log('Sessionpanel: logging in user: ' + username)
     try {
-      let user = await axios.post('https://pwd-racetrack/auth/local-login',
+      let user = await axios.post(
+        this.props.urlprefix + '/auth/local-login',
         { 'username': username,
           'password': password })
       this.props.changeUser(user.data)

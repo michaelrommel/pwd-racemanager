@@ -42,10 +42,12 @@ class Panels extends Component {
           scaleIp={this.props.scaleIp}
           user={this.props.user} />
         <RacePanel active={this.props.panelId === 'races'}
+          urlprefix={this.props.urlprefix}
           user={this.props.user}
           raceId={this.props.raceId}
           onRaceChange={this.props.changeRace} />
         <UserPanel active={this.props.panelId === 'users'}
+          urlprefix={this.props.urlprefix}
           user={this.props.user} />
         <DisplayPanel active={this.props.panelId === 'display'}
           urlprefix={this.props.urlprefix}
@@ -53,11 +55,13 @@ class Panels extends Component {
           raceId={this.props.raceId}
           displayProps={this.props.displayProps} />
         <SettingsPanel active={this.props.panelId === 'settings'}
+          urlprefix={this.props.urlprefix}
           user={this.props.user}
           scaleIp={this.props.scaleIp}
           changeScaleIp={this.props.changeScaleIp}
           changeUser={this.props.changeUser} />
         <SessionPanel active={this.props.panelId === 'session'}
+          urlprefix={this.props.urlprefix}
           user={this.props.user}
           changeUser={this.props.changeUser} />
       </React.Fragment>

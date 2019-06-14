@@ -220,11 +220,13 @@ class SettingsPanel extends Component {
           headers: { 'Authorization': 'Bearer ' + this.props.user.token }
         }
         console.log('SettingsPanel: path /settings')
-        settings = await axios.get('https://pwd-racetrack/admin/settings', config)
+        settings = await axios.get(
+          this.props.urlprefix + '/admin/settings', config)
       } else {
         // try to get the view for anonymous users
         console.log('SettingsPanel: path /init')
-        settings = await axios.get('https://pwd-racetrack/admin/init')
+        settings = await axios.get(
+          this.props.urlprefix + '/admin/init')
       }
       console.log('SettingsPanel: got application settings: ', settings.data.rootpwd)
       let newstate = {
@@ -254,7 +256,8 @@ class SettingsPanel extends Component {
       // can log in as root user, if we are not already logged in
       if (newstate.appState === 'fresh' && !this.props.user) {
         try {
-          let user = await axios.post('https://pwd-racetrack/auth/local-login',
+          let user = await axios.post(
+            this.props.urlprefix + '/auth/local-login',
             { 'username': 'root',
               'password': settings.data.rootpwd })
           // we got a user, propagate it to the top level state
@@ -277,7 +280,8 @@ class SettingsPanel extends Component {
         headers: { 'Authorization': 'Bearer ' + this.props.user.token }
       }
       settings.appState = 'configured'
-      let response = await axios.post('https://pwd-racetrack/admin/settings', settings, config)
+      let response = await axios.post(
+        this.props.urlprefix + '/admin/settings', settings, config)
       console.log('SettingsPanel: stored application settings: ', response)
       if (response.data.success) {
         // success storing the new settings, now

@@ -23,7 +23,8 @@ class App extends Component {
       'version': reactAppVersion,
       'environment': nodeEnv,
       'urlprefix': (nodeEnv === 'development')
-        ? 'https://pwd-racetrack' : window.location.protocol + '//' + window.location.hostname,
+        ? 'https://pwd-racetrack.michaelrommel.com'
+        : window.location.protocol + '//' + window.location.hostname,
       'appState': '',
       'panelId': '',
       'wsconns': [],

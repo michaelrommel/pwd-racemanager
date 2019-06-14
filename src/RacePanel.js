@@ -42,7 +42,8 @@ class RacePanel extends Component {
       let config = {
         headers: { 'Authorization': 'Bearer ' + this.props.user.token }
       }
-      let races = await axios.get('https://pwd-racetrack/race', config)
+      let races = await axios.get(
+        this.props.urlprefix + '/race', config)
       // we got an array of race objects
       const shortRaces = races.data.map((race) => [Object.keys(race)[0], race[Object.keys(race)[0]].description])
       this.setState({ shortRaces })
