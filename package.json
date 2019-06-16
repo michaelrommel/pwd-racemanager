@@ -9,7 +9,7 @@
     "pretest": "standard",
     "start": "cross-env PORT=3000 react-scripts start",
     "build": "react-scripts build",
-    "deploy": "scp -r build/* pwd-racetrack:/home/rommel/software/pwd-racetrack/bridge/network/routes/static/manager",
+    "deploy": "scp -r build/* rommel@pwd-racetrack.michaelrommel.com:/home/rommel/software/pwd-racetrack/bridge/network/routes/static/manager",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
