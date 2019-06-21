@@ -25,8 +25,11 @@ function CarCardList (props) {
           tags = ''
         }
         return (
-          <Box p={1} w={1 / 3} key={car[0]}>
-            <Card elevation={Elevation.TWO}>
+          <Box p={1} w={props.columns === 2 ? 1 / 2 : 1 / 3} key={car[0]}>
+            <Card elevation={Elevation.TWO}
+              id={car[0]}
+              interactive
+              onClick={props.carClickHandler}>
               <Flex w={1} p={0}>
                 <Box>
                   <i className={'flag-icons ' + code} />
@@ -98,17 +101,27 @@ class CarList extends Component {
       // the return status doesn't really matter
       return true
     } catch (err) {
-      console.log('CarList::getCars:eError getting car list: ', err)
+      console.log('CarList::getCars: Error getting car list: ', err)
       // the return status doesn't really matter
       return false
     }
+  }
+
+  carClickHandler = (e) => {
+    console.log(e.currentTarget.id)
+    this.props.openCarInEditpanel(e.currentTarget.id)
   }
 
   render () {
     return (
       <React.Fragment>
         <Flex justify='flex-start' wrap>
-          <CarCardList cars={this.state.briefCars} />
+          <CarCardList
+            columns={this.props.columns}
+            cars={this.state.briefCars}
+            carClickHandler={this.carClickHandler}
+            openCarInEditpanel={this.openCarInEditpanel}
+          />
         </Flex>
       </React.Fragment>
     )

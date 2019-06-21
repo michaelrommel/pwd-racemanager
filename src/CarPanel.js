@@ -1,8 +1,9 @@
 import React, { Component } from 'react'
-import { TagInput, FormGroup, Button, Collapse, Intent } from '@blueprintjs/core'
+import { Icon, TagInput, FormGroup, Button, Intent } from '@blueprintjs/core'
 import { Formik, Form } from 'formik'
 import { Flex, Box } from 'reflexbox'
 import * as Yup from 'yup'
+import memoizeOne from 'memoize-one'
 import axios from 'axios'
 import FormikValidator from './FormikValidator'
 import FieldWithError from './FieldWithError.js'
@@ -33,6 +34,7 @@ const CarForm = (props) => {
   let {
     isSubmitting,
     handleSubmit,
+    handleReset,
     handleChange,
     validateForm,
     initialValues,
@@ -41,7 +43,8 @@ const CarForm = (props) => {
     values,
     errors,
     user,
-    scaleIp
+    scaleIp,
+    changeCar
   } = props
 
   const showToast = (msg, intent, icon, timeout) => {
@@ -84,10 +87,14 @@ const CarForm = (props) => {
     />
   )
 
+  const handleClear = () => {
+    changeCar(null)
+  }
+
   return (
     <Form>
-      <Flex p={1} className='pwd-carform-rfid'>
-        <Box w={8 / 20} px={1}>
+      <Flex column p={1}>
+        <Box w={1} px={1} className='pwd-carform-details'>
           <FormGroup
             label={'Car RFID'}
             labelFor='rf'
@@ -99,8 +106,7 @@ const CarForm = (props) => {
               values={values}
               errors={errors} />
           </FormGroup>
-        </Box>
-        <Box w={9 / 20} px={1}>
+
           <FormGroup
             label={'Weight'}
             labelFor='weight'
@@ -114,17 +120,15 @@ const CarForm = (props) => {
               errors={errors} />
           </FormGroup>
         </Box>
-        <Box w={3 / 20} px={1}>
+        <Box w={6 / 10} px={1} className={'formbutton-right'}>
           <Button className={'formbutton'}
             id='getrfid' onClick={handleGetCar}
             type='button'
             intent={Intent.NONE} large fill
             text={isSubmitting ? 'Getting...' : 'Get car details'} />
         </Box>
-      </Flex>
 
-      <Flex p={1} justify='flex-start' className='pwd-carform-details'>
-        <Box w={8 / 20} px={1}>
+        <Box w={1} px={1}>
           <FormGroup
             label={'Owner\'s Full Name'}
             labelFor='name'
@@ -163,7 +167,7 @@ const CarForm = (props) => {
           </FormGroup>
         </Box>
 
-        <Box w={9 / 20} px={1}>
+        <Box w={1} px={1}>
           <FormGroup
             label={'Material Number'}
             labelFor='mn'
@@ -214,31 +218,100 @@ const CarForm = (props) => {
           />
         </Box>
 
-        <Box w={3 / 20} px={1} className={'save-button-box'}>
-          <Button className={'formbutton'}
-            id='saveCar' onClick={handleSubmit}
-            type='button'
-            intent={Intent.PRIMARY} large fill
-            text={isSubmitting ? 'Saving...' : 'Save car'} />
+        <Box w={1} px={1} className={'formbutton-right'}>
+          <Flex w={1}>
+            <Box w={1} px={1} className={'formbutton-right'}>
+              <Button className={'formbutton'}
+                id='clearForm' onClick={handleClear}
+                type='button'
+                intent={Intent.NONE} large fill
+                text={'Clear Form'} />
+            </Box>
+            <Box w={1} px={1} className={'formbutton-right'}>
+              <Button className={'formbutton'}
+                id='resetForm' onClick={handleReset}
+                type='button'
+                intent={Intent.NONE} large fill
+                text={'Reset Form'} />
+            </Box>
+            <Box w={1} px={1} className={'formbutton-right'}>
+              <Button className={'formbutton'}
+                id='saveCar' onClick={handleSubmit}
+                type='button'
+                intent={Intent.PRIMARY} large fill
+                text={isSubmitting ? 'Saving...' : 'Save car'} />
+            </Box>
+          </Flex>
         </Box>
       </Flex>
     </Form>
   )
 }
 
-class NewCarFormCollapse extends Component {
+class EditCarForm extends Component {
   constructor (props) {
     super(props)
-    this.state = {
+    this.defaultState = {
       'rf': '',
       'weight': 0,
       'ow': '',
       'name': '',
       'country': '',
-      'races': [],
+      'races': ['2019-Quali'],
       'mn': '201906261',
       'sn': '',
-      'racesInput': ''
+      'racesInput': '',
+      'newcar': true
+    }
+    this.state = this.defaultState
+  }
+
+  componentDidMount () {
+    console.log('EditCarForm: mounted.')
+    this.memoizeGetCar(this.props.carToEdit)
+  }
+
+  componentDidUpdate () {
+    console.log('EditCarForm: updated')
+    this.memoizeGetCar(this.props.carToEdit)
+    console.log('EditCarForm::componentDidUpdate: state is', this.state)
+  }
+
+  memoizeGetCar = memoizeOne(
+    (p) => {
+      console.log('EditCarForm::memoizedGetCar: submitted car is', p)
+      this.editCar(this.props.carToEdit)
+    }
+  )
+
+  editCar = async (rfid) => {
+    console.log('EditCarForm::getCar: getting cars from server')
+    if (rfid === null) {
+      // this is a request to clear the form
+      this.setState(this.defaultState)
+    } else {
+      // try to get a car to edit
+      try {
+        if (!this.props.user) {
+          console.log('EditCarForm::getCar: not logged in, cannot get!')
+          return
+        }
+        let config = {
+          headers: { 'Authorization': 'Bearer ' + this.props.user.token }
+        }
+        let response = await axios.get(
+          this.props.urlprefix + '/car/' + rfid, config)
+        // we got an array of car objects in response.data
+        let car = response.data
+        car['newcar'] = false
+        this.setState(car)
+        // the return status doesn't really matter
+        return true
+      } catch (err) {
+        console.log('CarList::getCars:eError getting car list: ', err)
+        // the return status doesn't really matter
+        return false
+      }
     }
   }
 
@@ -254,8 +327,14 @@ class NewCarFormCollapse extends Component {
       }
       // remove the input field from the values
       delete car.racesInput
-      let response = await axios.post(
-        this.props.urlprefix + '/car/' + car.rf, car, config)
+      let response
+      if (this.state.newcar) {
+        response = await axios.post(
+          this.props.urlprefix + '/car/' + car.rf, car, config)
+      } else {
+        response = await axios.put(
+          this.props.urlprefix + '/car/' + car.rf, car, config)
+      }
       console.log('CarPanel: stored car:', response)
       if (response.data.success) {
         // success storing the new settings
@@ -304,7 +383,10 @@ class NewCarFormCollapse extends Component {
         validationSchema={getValidationSchema()}
         onSubmit={this.onSubmit}
         component={
-          (formikProps) => <CarForm {...formikProps} {...this.props} />
+          (formikProps) => <CarForm
+            {...formikProps}
+            {...this.props}
+            {...this.functions}/>
         }
       />
     )
@@ -316,7 +398,8 @@ class CarPanel extends Component {
     super(props)
     this.state = {
       'editIsOpen': false,
-      'refreshToggle': false
+      'refreshToggle': false,
+      'carToEdit': null
     }
   }
 
@@ -328,35 +411,60 @@ class CarPanel extends Component {
     this.setState({ 'refreshToggle': !this.state.refreshToggle })
   }
 
+  changeCar = (car) => {
+    this.setState({ 'carToEdit': car })
+  }
+
+  openCarInEditpanel = (rfid) => {
+    // component is instantiated with carToEdit = null
+    // only if this function is called then the state is changed
+    // and propagated to the edit window. As soon as ....
+    // is finished, the state is reset to null and the edit window
+    // can function as new edit panel again
+    this.setState({ 'carToEdit': rfid })
+  }
+
   render () {
     const panelActive = this.props.active ? {} : { 'display': 'none' }
+    const drawerStyle = this.state.editIsOpen ? {} : { 'display': 'none' }
 
     return (
       <div className='carpanel' style={panelActive}>
-        <Collapse isOpen={this.state.editIsOpen}>
-          <NewCarFormCollapse
-            user={this.props.user}
-            urlprefix={this.props.urlprefix}
-            raceId={this.props.raceId}
-            scaleIp={this.props.scaleIp}
-            toggleCarlistRefresh={this.toggleCarlistRefresh}
-          />
-        </Collapse>
         <Flex w={1} p={0}>
-          <Box w={17 / 20}>
+          <Box w={this.state.editIsOpen ? 13 / 20 : 19 / 20}>
             <CarList
               user={this.props.user}
               urlprefix={this.props.urlprefix}
               raceId={this.props.raceId}
               refreshToggle={this.state.refreshToggle}
+              columns={this.state.editIsOpen ? 2 : 3}
+              openCarInEditpanel={this.openCarInEditpanel}
             />
           </Box>
-          <Box w={3 / 20} p={1}>
-            <Button onClick={this.openCarEditPanel}
-              fill
-              intent={Intent.NONE}>
-              {this.state.editIsOpen ? 'Close panel' : 'Add new car'}
-            </Button>
+          <Box w={1 / 20}>
+            <Flex column className='drawercontainer'
+              justify='flex-start' align='flex-end'>
+              <Box w={1} className='drawerspacer' py={2} px={1} />
+              <Box w={1} className='drawerbutton' py={2} px={1}
+                onClick={this.openCarEditPanel} >
+                <Icon icon={this.state.editIsOpen
+                  ? 'chevron-right'
+                  : 'chevron-left'}
+                />
+              </Box>
+            </Flex>
+          </Box>
+          <Box w={this.state.editIsOpen ? 6 / 20 : 0}
+            style={drawerStyle}>
+            <EditCarForm
+              user={this.props.user}
+              urlprefix={this.props.urlprefix}
+              raceId={this.props.raceId}
+              scaleIp={this.props.scaleIp}
+              toggleCarlistRefresh={this.toggleCarlistRefresh}
+              carToEdit={this.state.carToEdit}
+              changeCar={this.changeCar}
+            />
           </Box>
         </Flex>
       </div>

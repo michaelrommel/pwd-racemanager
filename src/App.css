@@ -18,24 +18,39 @@
 }
 
 .formbutton {
-  margin-top: 1.5em;
-  margin-bottom: 15px;
+  margin-top: 0.5em;
+  margin-bottom: 1.5em;
+}
+
+.formbutton-right {
+  align-self: flex-end;
+}
+
+.drawercontainer {
+  height: 100%;
+  border-right-color: #137cbd;
+  border-right-width: 4px;
+  border-right-style: solid;
+}
+
+.drawerspacer {
+  height: 300px;
+}
+
+.drawerbutton {
+  border-top-left-radius: 25px;
+  border-top-right-radius: 0px;
+  border-bottom-right-radius: 0px;
+  border-bottom-left-radius: 25px;
+  height: 50px;
+  width: 30px;
+  background: #137cbd;
+  cursor: pointer;
 }
 
 /* The classes for the Car Panel */
-.pwd-carform-rfid {
-  padding-bottom: 0;
-}
-
 .pwd-carform-details {
-  padding-top: 0;
-  border-bottom-width: 1px;
-  border-bottom-style: solid;
-  border-bottom-color: #777777;
-}
-
-.save-button-box {
-  align-self: flex-end;
+  padding-bottom: 0;
 }
 
 /* The classes for the Navigation Panel */
