@@ -38,7 +38,11 @@ class App extends Component {
     }
     this.dontrestore = [
       'environment',
-      'urlprefix'
+      'urlprefix',
+      'currentHeat',
+      'nextHeat',
+      'leaderboard',
+      'highscore'
     ]
   }
 

@@ -44,7 +44,7 @@ const CarForm = (props) => {
     errors,
     user,
     scaleIp,
-    changeCar
+    openCarInEditPanel
   } = props
 
   const showToast = (msg, intent, icon, timeout) => {
@@ -88,7 +88,7 @@ const CarForm = (props) => {
   )
 
   const handleClear = () => {
-    changeCar(null)
+    openCarInEditPanel(null)
   }
 
   return (
@@ -120,7 +120,7 @@ const CarForm = (props) => {
               errors={errors} />
           </FormGroup>
         </Box>
-        <Box w={6 / 10} px={1} className={'formbutton-right'}>
+        <Box w={1 / 3} px={1} className={'formbutton-right'}>
           <Button className={'formbutton'}
             id='getrfid' onClick={handleGetCar}
             type='button'
@@ -218,7 +218,7 @@ const CarForm = (props) => {
           />
         </Box>
 
-        <Box w={1} px={1} className={'formbutton-right'}>
+        <Box w={1} className={'formbutton-right'}>
           <Flex w={1}>
             <Box w={1} px={1} className={'formbutton-right'}>
               <Button className={'formbutton'}
@@ -285,7 +285,7 @@ class EditCarForm extends Component {
   )
 
   editCar = async (rfid) => {
-    console.log('EditCarForm::getCar: getting cars from server')
+    console.log('EditCarForm::editCar: getting car from server')
     if (rfid === null) {
       // this is a request to clear the form
       this.setState(this.defaultState)
@@ -293,23 +293,21 @@ class EditCarForm extends Component {
       // try to get a car to edit
       try {
         if (!this.props.user) {
-          console.log('EditCarForm::getCar: not logged in, cannot get!')
-          return
+          console.log('EditCarForm::editCar: not logged in, cannot get!')
+          throw (new Error('Not Logged In'))
         }
         let config = {
           headers: { 'Authorization': 'Bearer ' + this.props.user.token }
         }
         let response = await axios.get(
           this.props.urlprefix + '/car/' + rfid, config)
-        // we got an array of car objects in response.data
+        // we got one car object in response.data
         let car = response.data
         car['newcar'] = false
         this.setState(car)
-        // the return status doesn't really matter
         return true
       } catch (err) {
-        console.log('CarList::getCars:eError getting car list: ', err)
-        // the return status doesn't really matter
+        console.log('EditCarForm::editCar: error getting car: ', err)
         return false
       }
     }
@@ -318,10 +316,10 @@ class EditCarForm extends Component {
   async saveCar (car) {
     try {
       if (!this.props.user) {
-        console.log('CarPanel::saveCar: not logged in, cannot save!')
+        console.log('EditCarForm::saveCar: not logged in, cannot save!')
         throw (new Error('Not Logged In'))
       }
-      console.log('CarPanel::saveCar: saving a car: ')
+      console.log('EditCarForm::saveCar: saving a car: ' + car)
       let config = {
         headers: { 'Authorization': 'Bearer ' + this.props.user.token }
       }
@@ -335,13 +333,13 @@ class EditCarForm extends Component {
         response = await axios.put(
           this.props.urlprefix + '/car/' + car.rf, car, config)
       }
-      console.log('CarPanel: stored car:', response)
+      console.log('EditCarForm::saveCar: stored car:', response)
       if (response.data.success) {
         // success storing the new settings
       }
       return true
     } catch (err) {
-      console.log('Carpanel: error storing application settings: ', err)
+      console.log('EditCarForm::saveCar: error storing application settings: ', err)
       return false
     }
   }
@@ -349,16 +347,16 @@ class EditCarForm extends Component {
   onSubmit = async (values, actions) => {
     try {
       if (await this.saveCar(values)) {
-        this.showToast('Successfully saved the car.',
+        this.showToast('Successfully saved the car',
           Intent.SUCCESS, 'tick-circle', 2000)
         this.props.toggleCarlistRefresh()
       } else {
-        this.showToast('Failed to save the car.',
+        this.showToast('Failed to save the car',
           Intent.DANGER, 'warning-sign', 5000)
       }
       actions.setSubmitting(false)
     } catch (err) {
-      this.showToast('Failed to submit the car.',
+      this.showToast('Failed to submit the car',
         Intent.DANGER, 'warning-sign', 5000)
       actions.setSubmitting(false)
     }
@@ -385,8 +383,7 @@ class EditCarForm extends Component {
         component={
           (formikProps) => <CarForm
             {...formikProps}
-            {...this.props}
-            {...this.functions}/>
+            {...this.props} />
         }
       />
     )
@@ -403,16 +400,12 @@ class CarPanel extends Component {
     }
   }
 
-  openCarEditPanel = () => {
-    this.setState({ 'editIsOpen': !this.state.editIsOpen })
-  }
-
   toggleCarlistRefresh = () => {
     this.setState({ 'refreshToggle': !this.state.refreshToggle })
   }
 
-  changeCar = (car) => {
-    this.setState({ 'carToEdit': car })
+  openCarEditPanel = () => {
+    this.setState({ 'editIsOpen': !this.state.editIsOpen })
   }
 
   openCarInEditpanel = (rfid) => {
@@ -463,7 +456,7 @@ class CarPanel extends Component {
               scaleIp={this.props.scaleIp}
               toggleCarlistRefresh={this.toggleCarlistRefresh}
               carToEdit={this.state.carToEdit}
-              changeCar={this.changeCar}
+              openCarInEditpanel={this.openCarInEditpanel}
             />
           </Box>
         </Flex>

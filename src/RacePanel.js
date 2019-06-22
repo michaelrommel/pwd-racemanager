@@ -1,73 +1,86 @@
 import React, { Component } from 'react'
-import { Card, Button, Intent, Elevation, H3 } from '@blueprintjs/core'
+import { Button, Intent } from '@blueprintjs/core'
 import { Flex, Box } from 'reflexbox'
-import axios from 'axios'
-
-function RaceCardList (props) {
-  const races = props.races
-  if (races === undefined ||
-    races === null ||
-    races.length === 0
-  ) return null
-
-  return (
-    <React.Fragment>
-      {races.map((race) =>
-        <Box p={2} w={1 / 3} key={race[0]}>
-          <Card key={race[0]} elevation={Elevation.TWO}>
-            <H3>{race[0]}</H3>
-            <p>{race[1]}</p>
-          </Card>
-        </Box>
-      )}
-    </React.Fragment>
-  )
-}
+import RaceList from './RaceList'
+import RaceEditor from './RaceEditor'
 
 class RacePanel extends Component {
   constructor (props) {
     super(props)
     this.state = {
-      'shortRaces': []
+      'briefRaces': [],
+      'refreshToggle': false,
+      'subPanel': 'racelist',
+      'raceToEdit': null
     }
-    // this.getRaces = this.getRaces.bind(this)
   }
 
-  componentDidMount () {
-    console.log('RacePanel mounted.')
+  switchSubPanel = (panel) => {
+    this.setState({ 'subPanel': panel })
   }
 
-  getRaces = async () => {
-    try {
-      let config = {
-        headers: { 'Authorization': 'Bearer ' + this.props.user.token }
-      }
-      let races = await axios.get(
-        this.props.urlprefix + '/race', config)
-      // we got an array of race objects
-      const shortRaces = races.data.map((race) => [Object.keys(race)[0], race[Object.keys(race)[0]].description])
-      this.setState({ shortRaces })
-    } catch (err) {
-      console.log('Error getting race list: ', err)
-    }
+  switchToRacelist = () => {
+    this.switchSubPanel('racelist')
+  }
+
+  openRaceInEditpanel = (id) => {
+    // component is instantiated with carToEdit = null
+    // only if this function is called then the state is changed
+    // and propagated to the edit window. As soon as ....
+    // is finished, the state is reset to null and the edit window
+    // can function as new edit panel again
+    this.setState({
+      'raceToEdit': id,
+      'subPanel': 'editrace'
+    })
+  }
+
+  subPanelStyle = (subPanelName) => {
+    return (this.state.subPanel === subPanelName)
+      ? {}
+      : { 'display': 'none' }
   }
 
   render () {
     const panelActive = this.props.active ? {} : { 'display': 'none' }
 
     return (
-      <React.Fragment>
-        <Flex justify='center' className='racelistbutton' style={panelActive}>
-          <Box p={2}>
-            <Button id='getraces' onClick={this.getRaces}
-              intent={this.state.panelId === 'cars' ? Intent.PRIMARY : Intent.NONE}
-              large type='button' icon='refresh' text='Get list of races' />
-          </Box>
-        </Flex>
-        <Flex justify='center' className='racepanel' style={panelActive}>
-          <RaceCardList races={this.state.shortRaces} />
-        </Flex>
-      </React.Fragment>
+      <div className='racepanel' style={panelActive}>
+        <div className='racelist' style={this.subPanelStyle('racelist')}>
+          <Flex w={1} p={0}>
+            <Box w={1}>
+              <RaceList
+                user={this.props.user}
+                urlprefix={this.props.urlprefix}
+                refreshToggle={this.state.refreshToggle}
+                openRaceInEditpanel={this.openRaceInEditpanel}
+              />
+            </Box>
+          </Flex>
+        </div>
+        <div className='editrace' style={this.subPanelStyle('editrace')}>
+          <Flex w={1} p={0} column>
+            <Box p={2}>
+              <Button className={'formbutton-tight'}
+                onClick={this.switchToRacelist}
+                type='button'
+                intent={Intent.NONE}
+                large
+                icon={'chevron-left'}
+                text={'Back to race list'}
+              />
+            </Box>
+            <Box w={1}>
+              <RaceEditor
+                user={this.props.user}
+                urlprefix={this.props.urlprefix}
+                raceToEdit={this.state.raceToEdit}
+                openRaceInEditpanel={this.openRaceInEditpanel}
+              />
+            </Box>
+          </Flex>
+        </div>
+      </div>
     )
   }
 }
