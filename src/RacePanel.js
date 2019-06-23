@@ -3,6 +3,7 @@ import { Button, Intent } from '@blueprintjs/core'
 import { Flex, Box } from 'reflexbox'
 import RaceList from './RaceList'
 import RaceEditor from './RaceEditor'
+import RaceConductor from './RaceConductor'
 
 class RacePanel extends Component {
   constructor (props) {
@@ -35,6 +36,13 @@ class RacePanel extends Component {
     })
   }
 
+  openRaceInRunpanel = (id) => {
+    this.setState({
+      'raceToEdit': id,
+      'subPanel': 'runrace'
+    })
+  }
+
   subPanelStyle = (subPanelName) => {
     return (this.state.subPanel === subPanelName)
       ? {}
@@ -54,6 +62,7 @@ class RacePanel extends Component {
                 urlprefix={this.props.urlprefix}
                 refreshToggle={this.props.refreshToggle}
                 openRaceInEditpanel={this.openRaceInEditpanel}
+                openRaceInRunpanel={this.openRaceInRunpanel}
               />
             </Box>
           </Flex>
@@ -77,6 +86,28 @@ class RacePanel extends Component {
                 raceToEdit={this.state.raceToEdit}
                 refreshToggle={this.props.refreshToggle}
                 openRaceInEditpanel={this.openRaceInEditpanel}
+              />
+            </Box>
+          </Flex>
+        </div>
+        <div className='runrace' style={this.subPanelStyle('runrace')}>
+          <Flex w={1} p={0} column>
+            <Box p={2}>
+              <Button className={'formbutton-tight'}
+                onClick={this.switchToRacelist}
+                type='button'
+                intent={Intent.NONE}
+                large
+                icon={'chevron-left'}
+                text={'Back to race list'}
+              />
+            </Box>
+            <Box w={1}>
+              <RaceConductor
+                raceToRun={this.state.raceToEdit}
+                user={this.props.user}
+                displayProps={this.props.displayProps}
+                urlprefix={this.props.urlprefix}
               />
             </Box>
           </Flex>

@@ -79,6 +79,85 @@
   cursor: pointer;
 }
 
+.pwd-racecard {
+  text-align: center;
+  cursor: pointer;
+}
+
+.pwd-racecarddetails {
+  /* margin-left: 5em; */
+  text-align: left;
+  cursor: pointer;
+}
+
+.pwd-controls {
+  text-align: center;
+}
+
+.pwd-status {
+  text-align: center;
+  border-right-color: #666666;
+  border-right-style: solid;
+  border-right-width: 1px;
+}
+
+.bp3-dark .pwd-heat {
+  border-color: #666666;
+  border-style: solid;
+  border-width: 1px;
+  border-radius: 5px;
+  background-color: #394b59;
+}
+
+.bp3-dark .pwd-gray {
+  background-color: #515151;
+  text-align: center;
+}
+
+.bp3-dark .pwd-blue {
+  background-color: #00616b;
+  text-align: center;
+}
+
+.bp3-dark .pwd-orange {
+  background-color: #7e4000;
+  text-align: center;
+}
+
+.bp3-dark .pwd-berry {
+  background-color: #571f2c;
+  text-align: center;
+}
+
+.pwd-heat {
+  border-color: #666666;
+  border-style: solid;
+  border-width: 1px;
+  border-radius: 5px;
+  background-color: #f5f8fa;
+}
+
+.pwd-gray {
+  background-color: #d0cfcf;
+  text-align: center;
+}
+
+.pwd-blue {
+  background-color: #dffffc;
+  text-align: center;
+}
+
+.pwd-orange {
+  background-color: #ffd9aa;
+  text-align: center;
+}
+
+.pwd-berry {
+  background-color: #edb9c5;
+  text-align: center;
+}
+
+
 /* The classes for the Navigation Panel */
 .navigation-button {
   margin: 0px 2px 0px 2px;

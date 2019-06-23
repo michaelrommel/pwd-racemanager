@@ -203,7 +203,9 @@ class App extends Component {
 
   mergeLaneStatus = (laneStatus) => {
     console.log(JSON.stringify(laneStatus, null, 2))
-    if (laneStatus.data.heat !== this.state.currentHeat.heat) {
+    if (this.state.currentHeat === undefined ||
+      this.state.currentHeat === null ||
+      laneStatus.data.heat !== this.state.currentHeat.heat) {
       console.log('ignoring lane status for not current heat, racetrack out of sync')
       return
     }

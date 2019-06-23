@@ -46,6 +46,7 @@ class Panels extends Component {
           urlprefix={this.props.urlprefix}
           user={this.props.user}
           raceId={this.props.raceId}
+          displayProps={this.props.displayProps}
           toggleRaceRefresh={this.props.toggleRaceRefresh}
           raceRefreshToggle={this.props.raceRefreshToggle}
           onRaceChange={this.props.changeRace} />
