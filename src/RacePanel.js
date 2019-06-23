@@ -9,7 +9,6 @@ class RacePanel extends Component {
     super(props)
     this.state = {
       'briefRaces': [],
-      'refreshToggle': false,
       'subPanel': 'racelist',
       'raceToEdit': null
     }
@@ -24,11 +23,12 @@ class RacePanel extends Component {
   }
 
   openRaceInEditpanel = (id) => {
-    // component is instantiated with carToEdit = null
+    // component is instantiated with raceToEdit = null
     // only if this function is called then the state is changed
     // and propagated to the edit window. As soon as ....
     // is finished, the state is reset to null and the edit window
     // can function as new edit panel again
+    this.props.toggleRaceRefresh()
     this.setState({
       'raceToEdit': id,
       'subPanel': 'editrace'
@@ -52,7 +52,7 @@ class RacePanel extends Component {
               <RaceList
                 user={this.props.user}
                 urlprefix={this.props.urlprefix}
-                refreshToggle={this.state.refreshToggle}
+                refreshToggle={this.props.refreshToggle}
                 openRaceInEditpanel={this.openRaceInEditpanel}
               />
             </Box>
@@ -75,6 +75,7 @@ class RacePanel extends Component {
                 user={this.props.user}
                 urlprefix={this.props.urlprefix}
                 raceToEdit={this.state.raceToEdit}
+                refreshToggle={this.props.refreshToggle}
                 openRaceInEditpanel={this.openRaceInEditpanel}
               />
             </Box>

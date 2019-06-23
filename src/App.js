@@ -31,6 +31,7 @@ class App extends Component {
       'user': null,
       'scaleIp': '123',
       'raceId': null,
+      'raceRefreshToggle': false,
       'currentHeat': null,
       'nextHeat': null,
       'leaderboard': null,
@@ -95,6 +96,10 @@ class App extends Component {
     console.log('App: changing user to: ', user)
     this.setState({ 'user': user })
     this.getAppState()
+  }
+
+  toggleRaceRefresh = () => {
+    this.setState({ 'raceRefreshToggle': !this.state.raceRefreshToggle })
   }
 
   getAppState = async () => {
@@ -275,6 +280,8 @@ class App extends Component {
           user={this.state.user}
           raceId={this.state.raceId}
           scaleIp={this.state.scaleIp}
+          raceRefreshToggle={this.state.raceRefreshToggle}
+          toggleRaceRefresh={this.toggleRaceRefresh}
           displayProps={displayProps}
         />
       </div>

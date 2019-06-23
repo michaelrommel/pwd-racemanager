@@ -1,5 +1,5 @@
 import React from 'react'
-import { Icon, Tag, Intent, Card, Elevation, H4 } from '@blueprintjs/core'
+import { Icon, Tag, Intent, Card, Callout, Elevation, H4 } from '@blueprintjs/core'
 import { Flex, Box } from 'reflexbox'
 import { getCodeForName } from './iso3166.js'
 
@@ -10,23 +10,26 @@ function DraggableCarCardList (props) {
     Object.keys(cars).length === 0
   ) return null
 
-  let tags
-
   return (
     <React.Fragment>
       {Object.keys(cars).map((startNum) => {
         if (cars[startNum] === undefined) return null
         let code = getCodeForName(cars[startNum].country)
-        if (cars[startNum].races) {
-          tags = cars[startNum].races.map(
-            (tag) => <Tag key={tag} round intent={Intent.PRIMARY}>{tag}</Tag>)
+        let carIntent
+        if (cars[startNum].stat === 'added') {
+          carIntent = Intent.PRIMARY
+        } else if (cars[startNum].stat === 'removed') {
+          carIntent = Intent.DANGER
         } else {
-          tags = ''
+          carIntent = Intent.NONE
         }
+
         return (
           <Box w={1 / props.columns} p={1} key={cars[startNum].rf}>
-            <Card className={'card-tight'}
+            <Callout className={'card-tight'}
               elevation={Elevation.TWO}
+              intent={carIntent}
+              icon={null}
               id={cars[startNum].rf}
             >
               <Flex w={1} p={0} justify={'space-between'}>
@@ -50,7 +53,7 @@ function DraggableCarCardList (props) {
                   </Box>
                 </Flex>
               </Flex>
-            </Card>
+            </Callout>
           </Box>
         )
       })}

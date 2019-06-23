@@ -402,6 +402,7 @@ class CarPanel extends Component {
 
   toggleCarlistRefresh = () => {
     this.setState({ 'refreshToggle': !this.state.refreshToggle })
+    this.props.toggleRaceRefresh()
   }
 
   openCarEditPanel = () => {
