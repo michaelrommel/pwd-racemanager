@@ -1,5 +1,5 @@
 import React from 'react'
-import { Icon, Tag, Intent, Card, Elevation } from '@blueprintjs/core'
+import { Tag, Intent, Card, Elevation } from '@blueprintjs/core'
 import { Flex, Box } from 'reflexbox'
 import { getCodeForName } from './iso3166.js'
 

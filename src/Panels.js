@@ -48,6 +48,7 @@ class Panels extends Component {
           raceId={this.props.raceId}
           displayProps={this.props.displayProps}
           toggleRaceRefresh={this.props.toggleRaceRefresh}
+          updateCurrentNextHeat={this.props.updateCurrentNextHeat}
           raceRefreshToggle={this.props.raceRefreshToggle}
           onRaceChange={this.props.changeRace} />
         <UserPanel active={this.props.panelId === 'users'}

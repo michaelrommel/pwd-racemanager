@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Icon, TagInput, FormGroup, Button, Intent } from '@blueprintjs/core'
+import { Icon, FormGroup, Button, Intent } from '@blueprintjs/core'
 import { Formik, Form } from 'formik'
 import { Flex, Box } from 'reflexbox'
 import * as Yup from 'yup'
@@ -174,7 +174,6 @@ class RaceForm extends Component {
     let {
       isSubmitting,
       handleReset,
-      handleSubmit,
       handleChange,
       validateForm,
       initialValues,

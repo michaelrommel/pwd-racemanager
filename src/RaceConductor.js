@@ -24,6 +24,7 @@ class RaceConductor extends Component {
     this.memoizeGetHeats(this.props.raceToRun, this.props.refreshToggle)
     // checking if currentHeat number changed or the status changed,
     // trigger a new update
+    let mustRefresh = false
     if (
       (this.props.displayProps !== undefined &&
       this.props.displayProps !== null &&
@@ -38,6 +39,26 @@ class RaceConductor extends Component {
       this.props.displayProps.currentHeat.status !==
       prevProps.displayProps.currentHeat.status)
     ) {
+      mustRefresh = true
+    }
+    if (
+      (this.props.displayProps !== undefined &&
+      this.props.displayProps !== null &&
+      this.props.displayProps.nextHeat !== undefined &&
+      this.props.displayProps.nextHeat !== null &&
+      prevProps.displayProps !== undefined &&
+      prevProps.displayProps !== null &&
+      prevProps.displayProps.nextHeat !== undefined &&
+      prevProps.displayProps.nextHeat !== null) &&
+      (this.props.displayProps.nextHeat.heat !==
+      prevProps.displayProps.nextHeat.heat ||
+      this.props.displayProps.nextHeat.status !==
+      prevProps.displayProps.nextHeat.status)
+    ) {
+      mustRefresh = true
+    }
+    if (mustRefresh) {
+      console.log('RaceConductor::CDU: heatnumber or status changed, refreshing')
       this.getHeats(this.props.raceToRun)
     }
   }
@@ -104,6 +125,8 @@ class RaceConductor extends Component {
           this.showToast('Error marking next heat', Intent.DANGER,
             'warning sign', 3000)
         }
+        // trigger a refresh of the heats
+        this.props.updateCurrentNextHeat()
       } catch (err) {
         console.log('RaceConductor::markNext: Error marking next heat: ', err)
         return false
@@ -137,6 +160,8 @@ class RaceConductor extends Component {
           this.showToast('Error initializing current heat', Intent.DANGER,
             'warning sign', 3000)
         }
+        // trigger a refresh of the heats
+        this.props.updateCurrentNextHeat()
       } catch (err) {
         console.log('RaceConductor::initHeat: Error initializing current heat: ', err)
         return false
@@ -170,6 +195,8 @@ class RaceConductor extends Component {
           this.showToast('Error starting current heat', Intent.DANGER,
             'warning sign', 3000)
         }
+        // trigger a refresh of the heats
+        this.props.updateCurrentNextHeat()
       } catch (err) {
         console.log('RaceConductor::startHeat: Error starting current heat: ', err)
         return false
@@ -207,7 +234,15 @@ class RaceConductor extends Component {
     if (this.state.heats.length === 0) return null
 
     console.log('RaceConductor: rendering, with displayProps:',
-      JSON.stringify(this.props.displayProps, null, 2))
+      JSON.stringify(this.props.displayProps, null, 0))
+    console.log('RaceConductor: rendering, with state:',
+      JSON.stringify(this.state.heats, null, 0))
+
+    const emptyLane = {
+      'ow': '-',
+      't': 0,
+      'score': 0
+    }
 
     return (
       <Flex w={1} p={1}>
@@ -216,15 +251,32 @@ class RaceConductor extends Component {
           <Flex w={1} column>
             <React.Fragment>
               {this.state.heats.map((heat) => {
-                if (this.props.displayProps.currentHeat.heat === heat.heat) {
+                if (this.props.displayProps !== undefined &&
+                  this.props.displayProps.currentHeat !== undefined &&
+                  this.props.displayProps.currentHeat.heat === heat.heat) {
                   // the currently to be displayed row is more current in the
                   // displayprops, take values from there
+                  console.log('RaceConductor: Old current heat: ', heat)
                   heat = { ...heat, ...this.props.displayProps.currentHeat }
-                } else if (this.props.displayProps.nextHeat.heat === heat.heat) {
+                  console.log('RaceConductor: New current heat: ', heat)
+                } else if (this.props.displayProps !== undefined &&
+                  this.props.displayProps.nextHeat !== undefined &&
+                  this.props.displayProps.nextHeat.heat === heat.heat) {
                   // the currently to be displayed row is more current in the
                   // displayprops, take values from there
+                  console.log('RaceConductor: Old next heat: ', heat)
                   heat = { ...heat, ...this.props.displayProps.nextHeat }
+                  console.log('RaceConductor: New next heat: ', heat)
                 }
+
+                // add missing lane information for runs with cars < lanes
+                for (let i = 0; i < 4; i++) {
+                  if (heat.results[i] === undefined) {
+                    heat.results[i] = { ...emptyLane }
+                  }
+                }
+
+                console.log('Rendering heat: ', heat)
                 return (
                   <Box w={1} my={1} key={heat.heat} className={'pwd-heat'}>
                     <Flex w={1}>

@@ -108,6 +108,7 @@ class RacePanel extends Component {
                 user={this.props.user}
                 displayProps={this.props.displayProps}
                 urlprefix={this.props.urlprefix}
+                updateCurrentNextHeat={this.props.updateCurrentNextHeat}
               />
             </Box>
           </Flex>

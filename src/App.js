@@ -251,6 +251,23 @@ class App extends Component {
     this.setState(newState)
   }
 
+  updateCurrentNextHeat = async () => {
+    console.log('App::updateCurrentNextHeat: getting current heat')
+    let currentHeat = getCurrentHeat(this.state.urlprefix,
+      this.state.user, this.state.raceId)
+    console.log('App::updateCurrentNextHeat: getting next heat')
+    let nextHeat = getNextHeat(this.state.urlprefix,
+      this.state.user, this.state.raceId)
+    // assemble the state once all promises returned
+    let newState = {
+      'currentHeat': await currentHeat,
+      'nextHeat': await nextHeat || []
+    }
+    console.log('App::updateCurrentNextHeat: got heat status, setting state')
+    // once we have the new state complete, update the state
+    this.setState(newState)
+  }
+
   showToast = (msg, intent, icon) => {
     DisplayToast.show({ 'message': msg, 'intent': intent, 'icon': icon })
   }
@@ -277,6 +294,7 @@ class App extends Component {
           changeRace={this.changeRace}
           changeUser={this.changeUser}
           changeScaleIp={this.changeScaleIp}
+          updateCurrentNextHeat={this.updateCurrentNextHeat}
           panelId={this.state.panelId}
           urlprefix={this.state.urlprefix}
           user={this.state.user}
