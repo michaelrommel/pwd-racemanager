@@ -3,6 +3,7 @@ import { Callout, Elevation, Button, Tag, Intent, H3, H4 } from '@blueprintjs/co
 import { Flex, Box } from 'reflexbox'
 import axios from 'axios'
 import memoizeOne from 'memoize-one'
+import DisplayToast from './DisplayToast'
 
 function RaceCardList (props) {
   const races = props.races
@@ -150,6 +151,15 @@ class RaceList extends Component {
       console.log('RaceList::initRace: Error initializing race: ', err)
       return false
     }
+  }
+
+  showToast = (msg, intent, icon, timeout) => {
+    DisplayToast.show({
+      'message': msg,
+      'intent': intent,
+      'icon': icon,
+      'timeout': timeout
+    })
   }
 
   editRaceClickHandler = (e) => {
