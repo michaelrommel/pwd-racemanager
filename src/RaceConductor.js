@@ -16,12 +16,12 @@ class RaceConductor extends Component {
 
   componentDidMount () {
     console.log('RaceConductor: mounted.')
-    this.memoizeGetHeats(this.props.raceToRun, this.props.refreshToggle)
+    this.memoizeGetHeats(this.props.raceToRun, this.props.raceRefreshCounter)
   }
 
   componentDidUpdate (prevProps, prevState, snapshot) {
     console.log('RaceConductor::componentDidUpdate: state is', this.state)
-    this.memoizeGetHeats(this.props.raceToRun, this.props.refreshToggle)
+    this.memoizeGetHeats(this.props.raceToRun, this.props.raceRefreshCounter)
     // checking if currentHeat number changed or the status changed,
     // trigger a new update
     let mustRefresh = false
@@ -248,96 +248,98 @@ class RaceConductor extends Component {
       <Flex w={1} p={1}>
         <Box w={2 / 3} p={3}>
           <H4>Heat Controller</H4>
-          <Flex w={1} column>
-            <React.Fragment>
-              {this.state.heats.map((heat) => {
-                if (this.props.displayProps !== undefined &&
-                  this.props.displayProps.currentHeat !== undefined &&
-                  this.props.displayProps.currentHeat.heat === heat.heat) {
-                  // the currently to be displayed row is more current in the
-                  // displayprops, take values from there
-                  console.log('RaceConductor: Old current heat: ', heat)
-                  heat = { ...heat, ...this.props.displayProps.currentHeat }
-                  console.log('RaceConductor: New current heat: ', heat)
-                } else if (this.props.displayProps !== undefined &&
-                  this.props.displayProps.nextHeat !== undefined &&
-                  this.props.displayProps.nextHeat.heat === heat.heat) {
-                  // the currently to be displayed row is more current in the
-                  // displayprops, take values from there
-                  console.log('RaceConductor: Old next heat: ', heat)
-                  heat = { ...heat, ...this.props.displayProps.nextHeat }
-                  console.log('RaceConductor: New next heat: ', heat)
-                }
-
-                // add missing lane information for runs with cars < lanes
-                for (let i = 0; i < 4; i++) {
-                  if (heat.results[i] === undefined) {
-                    heat.results[i] = { ...emptyLane }
+          <div className={'pwd-raceconductorcontainer'}>
+            <Flex w={1} column className={'pwd-raceconductor'}>
+              <React.Fragment>
+                {this.state.heats.map((heat) => {
+                  if (this.props.displayProps !== undefined &&
+                    this.props.displayProps.currentHeat !== undefined &&
+                    this.props.displayProps.currentHeat.heat === heat.heat) {
+                    // the currently to be displayed row is more current in the
+                    // displayprops, take values from there
+                    console.log('RaceConductor: Old current heat: ', heat)
+                    heat = { ...heat, ...this.props.displayProps.currentHeat }
+                    console.log('RaceConductor: New current heat: ', heat)
+                  } else if (this.props.displayProps !== undefined &&
+                    this.props.displayProps.nextHeat !== undefined &&
+                    this.props.displayProps.nextHeat.heat === heat.heat) {
+                    // the currently to be displayed row is more current in the
+                    // displayprops, take values from there
+                    console.log('RaceConductor: Old next heat: ', heat)
+                    heat = { ...heat, ...this.props.displayProps.nextHeat }
+                    console.log('RaceConductor: New next heat: ', heat)
                   }
-                }
 
-                console.log('Rendering heat: ', heat)
-                return (
-                  <Box w={1} my={1} key={heat.heat} className={'pwd-heat'}>
-                    <Flex w={1}>
-                      <Box w={0.05} p={2}>
-                        <H5>{heat.heat}</H5>
-                      </Box>
-                      <Box w={0.15} px={1} py={2} className={'pwd-gray'}>
-                        <H5>{heat.results[0].ow}</H5>
-                        <p>{heat.results[0].t} / {heat.results[0].score}</p>
-                      </Box>
-                      <Box w={0.15} px={1} py={2} className={'pwd-blue'}>
-                        <H5>{heat.results[1].ow}</H5>
-                        <p>{heat.results[1].t} / {heat.results[1].score}</p>
-                      </Box>
-                      <Box w={0.15} px={1} py={2} className={'pwd-orange'}>
-                        <H5>{heat.results[2].ow}</H5>
-                        <p>{heat.results[2].t} / {heat.results[2].score}</p>
-                      </Box>
-                      <Box w={0.15} px={1} py={2} className={'pwd-berry'}>
-                        <H5>{heat.results[3].ow}</H5>
-                        <p>{heat.results[3].t} / {heat.results[3].score}</p>
-                      </Box>
-                      <Box w={0.15} px={1} py={2} className={'pwd-status'}>
-                        <H5>{heat.status}</H5>
-                      </Box>
-                      <Box w={0.20} p={1} className={'pwd-controls'}>
-                        <Button className={'formbutton-tight'}
-                          onClick={this.markNext}
-                          id={'next-' + heat.heatkey}
-                          type='button' fill
-                          intent={Intent.NONE}
-                          icon={'tick-circle'}
-                          text={'Mark Next'}
-                        />
-                        <Button className={'formbutton-tight'}
-                          onClick={this.initHeat}
-                          id={'init-' + heat.heatkey}
-                          type='button' fill
-                          intent={Intent.NONE}
-                          icon={'confirm'}
-                          text={'Init Heat'}
-                        />
-                        <Button className={'formbutton-tight'}
-                          onClick={this.startHeat}
-                          id={'start-' + heat.heatkey}
-                          type='button' fill
-                          intent={Intent.NONE}
-                          icon={heat.status === 'just finished'
-                            ? 'repeat'
-                            : 'play'}
-                          text={heat.status === 'just finished'
-                            ? 'Repeat Heat'
-                            : 'Start Heat'}
-                        />
-                      </Box>
-                    </Flex>
-                  </Box>
-                )
-              })}
-            </React.Fragment>
-          </Flex>
+                  // add missing lane information for runs with cars < lanes
+                  for (let i = 0; i < 4; i++) {
+                    if (heat.results[i] === undefined) {
+                      heat.results[i] = { ...emptyLane }
+                    }
+                  }
+
+                  console.log('Rendering heat: ', heat)
+                  return (
+                    <Box w={1} my={1} key={heat.heat} className={'pwd-heat'}>
+                      <Flex w={1}>
+                        <Box w={0.05} p={2}>
+                          <H5>{heat.heat}</H5>
+                        </Box>
+                        <Box w={0.15} px={1} py={2} className={'pwd-gray'}>
+                          <H5>{heat.results[0].ow}</H5>
+                          <p>{heat.results[0].t} / {heat.results[0].score}</p>
+                        </Box>
+                        <Box w={0.15} px={1} py={2} className={'pwd-blue'}>
+                          <H5>{heat.results[1].ow}</H5>
+                          <p>{heat.results[1].t} / {heat.results[1].score}</p>
+                        </Box>
+                        <Box w={0.15} px={1} py={2} className={'pwd-orange'}>
+                          <H5>{heat.results[2].ow}</H5>
+                          <p>{heat.results[2].t} / {heat.results[2].score}</p>
+                        </Box>
+                        <Box w={0.15} px={1} py={2} className={'pwd-berry'}>
+                          <H5>{heat.results[3].ow}</H5>
+                          <p>{heat.results[3].t} / {heat.results[3].score}</p>
+                        </Box>
+                        <Box w={0.15} px={1} py={2} className={'pwd-status'}>
+                          <H5>{heat.status}</H5>
+                        </Box>
+                        <Box w={0.20} p={1} className={'pwd-controls'}>
+                          <Button className={'formbutton-tight'}
+                            onClick={this.markNext}
+                            id={'next-' + heat.heatkey}
+                            type='button' fill
+                            intent={Intent.NONE}
+                            icon={'tick-circle'}
+                            text={'Mark Next'}
+                          />
+                          <Button className={'formbutton-tight'}
+                            onClick={this.initHeat}
+                            id={'init-' + heat.heatkey}
+                            type='button' fill
+                            intent={Intent.NONE}
+                            icon={'confirm'}
+                            text={'Init Heat'}
+                          />
+                          <Button className={'formbutton-tight'}
+                            onClick={this.startHeat}
+                            id={'start-' + heat.heatkey}
+                            type='button' fill
+                            intent={Intent.NONE}
+                            icon={heat.status === 'just finished'
+                              ? 'repeat'
+                              : 'play'}
+                            text={heat.status === 'just finished'
+                              ? 'Repeat Heat'
+                              : 'Start Heat'}
+                          />
+                        </Box>
+                      </Flex>
+                    </Box>
+                  )
+                })}
+              </React.Fragment>
+            </Flex>
+          </div>
         </Box>
         <Box w={1 / 3} p={3}>
           <H4>Leaderboard</H4>

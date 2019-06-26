@@ -93,12 +93,12 @@ class RaceList extends Component {
 
   componentDidMount () {
     console.log('RaceList: mounted.')
-    this.memoizeGetRaces(this.props.user, this.props.refreshToggle)
+    this.memoizeGetRaces(this.props.user, this.props.raceRefreshCounter)
   }
 
   componentDidUpdate () {
     console.log('RaceList: updated')
-    this.memoizeGetRaces(this.props.user, this.props.refreshToggle)
+    this.memoizeGetRaces(this.props.user, this.props.raceRefreshCounter)
     console.log('RaceList::componentDidUpdate: briefRaces is', this.state.briefRaces)
   }
 

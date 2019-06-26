@@ -182,8 +182,7 @@ class RaceForm extends Component {
       errors,
       user,
       urlprefix,
-      raceToEdit,
-      refreshToggle
+      raceToEdit
     } = this.props
 
     const drawerStyle = this.state.addPanelIsOpen ? {} : { 'display': 'none' }
@@ -335,7 +334,6 @@ class RaceForm extends Component {
                 user={user}
                 allCars={values.allCars}
                 urlprefix={urlprefix}
-                refreshToggle={refreshToggle}
                 addClickHandler={this.addClickHandler}
                 removeClickHandler={this.removeClickHandler}
                 columns={this.state.addPanelIsOpen ? 3 : 4}
@@ -366,7 +364,6 @@ class RaceForm extends Component {
                 user={user}
                 allCars={values.allCars}
                 urlprefix={urlprefix}
-                refreshToggle={refreshToggle}
                 addClickHandler={this.addClickHandler}
                 removeClickHandler={this.removeClickHandler}
                 columns={this.state.addPanelIsOpen ? 3 : 4}
@@ -399,15 +396,14 @@ class RaceEditor extends Component {
 
   componentDidMount () {
     console.log('RaceEditor: mounted.')
-    this.memoizeGetRace(this.props.raceToEdit, this.props.refreshToggle)
+    this.memoizeGetRace(this.props.raceToEdit, this.props.raceRefreshCounter)
   }
 
   componentDidUpdate () {
     console.log('RaceEditor: updated')
-    this.memoizeGetRace(this.props.raceToEdit, this.props.refreshToggle)
+    this.memoizeGetRace(this.props.raceToEdit, this.props.raceRefreshCounter)
     console.log('RaceEditor::componentDidUpdate: state is', this.state)
   }
-
 
   memoizeGetRace = memoizeOne(
     (p) => {
@@ -493,6 +489,7 @@ class RaceEditor extends Component {
       }
       console.log('RaceEditor::saveRace: stored race:', response)
       this.setState(race)
+      this.props.incrementRaceRefresh()
       return true
     } catch (err) {
       console.log('RaceEditor::saveRace: error storing application settings: ', err)

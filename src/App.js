@@ -31,7 +31,7 @@ class App extends Component {
       'user': null,
       'scaleIp': '123',
       'raceId': null,
-      'raceRefreshToggle': false,
+      'raceRefreshCounter': 0,
       'currentHeat': null,
       'nextHeat': null,
       'leaderboard': null,
@@ -98,8 +98,8 @@ class App extends Component {
     this.getAppState()
   }
 
-  toggleRaceRefresh = () => {
-    this.setState({ 'raceRefreshToggle': !this.state.raceRefreshToggle })
+  incrementRaceRefresh = () => {
+    this.setState({ 'raceRefreshCounter': this.state.raceRefreshCounter + 1 })
   }
 
   getAppState = async () => {
@@ -191,7 +191,7 @@ class App extends Component {
   mergeHeat = (heat) => {
     console.log(JSON.stringify(heat, null, 2))
     let lanes = this.state.currentHeat
-    if (lanes === undefined || lanes === null) return
+    if (lanes === undefined || lanes === null || lanes.results === undefined) return
     // now mix in the status information into to original heat info
     for (let i = 0; i < lanes.results.length; i++) {
       Object.assign(lanes.results[i], heat.data.results[i])
@@ -210,7 +210,7 @@ class App extends Component {
       return
     }
     let lanes = this.state.currentHeat
-    if (lanes === undefined || lanes === null) return
+    if (lanes === undefined || lanes === null || lanes.results === undefined) return
     // now mix in the status information into to original heat info
     for (let i = 0; i < lanes.results.length; i++) {
       for (let j = 0; j < laneStatus.data.lanes.length; j++) {
@@ -300,8 +300,8 @@ class App extends Component {
           user={this.state.user}
           raceId={this.state.raceId}
           scaleIp={this.state.scaleIp}
-          raceRefreshToggle={this.state.raceRefreshToggle}
-          toggleRaceRefresh={this.toggleRaceRefresh}
+          raceRefreshCounter={this.state.raceRefreshCounter}
+          incrementRaceRefresh={this.incrementRaceRefresh}
           displayProps={displayProps}
         />
       </div>

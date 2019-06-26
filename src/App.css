@@ -79,6 +79,19 @@
   cursor: pointer;
 }
 
+.pwd-raceconductorcontainer {
+  overflow: hidden;
+  position: relative;
+  left: -17px;
+}
+
+.pwd-raceconductor {
+  height: 75vh;
+  right: -17px;
+  overflow-y: scroll;
+  position: relative;
+}
+
 .pwd-racecard {
   text-align: center;
   cursor: pointer;

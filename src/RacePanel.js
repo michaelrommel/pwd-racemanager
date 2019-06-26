@@ -29,7 +29,7 @@ class RacePanel extends Component {
     // and propagated to the edit window. As soon as ....
     // is finished, the state is reset to null and the edit window
     // can function as new edit panel again
-    this.props.toggleRaceRefresh()
+    this.props.incrementRaceRefresh()
     this.setState({
       'raceToEdit': id,
       'subPanel': 'editrace'
@@ -63,6 +63,8 @@ class RacePanel extends Component {
                 refreshToggle={this.props.refreshToggle}
                 openRaceInEditpanel={this.openRaceInEditpanel}
                 openRaceInRunpanel={this.openRaceInRunpanel}
+                raceRefreshCounter={this.props.raceRefreshCounter}
+                incrementRaceRefresh={this.props.incrementRaceRefresh}
               />
             </Box>
           </Flex>
@@ -84,7 +86,8 @@ class RacePanel extends Component {
                 user={this.props.user}
                 urlprefix={this.props.urlprefix}
                 raceToEdit={this.state.raceToEdit}
-                refreshToggle={this.props.refreshToggle}
+                raceRefreshCounter={this.props.raceRefreshCounter}
+                incrementRaceRefresh={this.props.incrementRaceRefresh}
                 openRaceInEditpanel={this.openRaceInEditpanel}
               />
             </Box>
@@ -109,6 +112,7 @@ class RacePanel extends Component {
                 displayProps={this.props.displayProps}
                 urlprefix={this.props.urlprefix}
                 updateCurrentNextHeat={this.props.updateCurrentNextHeat}
+                raceRefreshCounter={this.props.raceRefreshCounter}
               />
             </Box>
           </Flex>

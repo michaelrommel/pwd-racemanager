@@ -40,16 +40,17 @@ class Panels extends Component {
           urlprefix={this.props.urlprefix}
           user={this.props.user}
           raceId={this.props.raceId}
-          toggleRaceRefresh={this.props.toggleRaceRefresh}
+          incrementRaceRefresh={this.props.incrementRaceRefresh}
+          raceRefreshCounter={this.props.raceRefreshCounter}
           scaleIp={this.props.scaleIp} />
         <RacePanel active={this.props.panelId === 'races'}
           urlprefix={this.props.urlprefix}
           user={this.props.user}
           raceId={this.props.raceId}
           displayProps={this.props.displayProps}
-          toggleRaceRefresh={this.props.toggleRaceRefresh}
           updateCurrentNextHeat={this.props.updateCurrentNextHeat}
-          raceRefreshToggle={this.props.raceRefreshToggle}
+          incrementRaceRefresh={this.props.incrementRaceRefresh}
+          raceRefreshCounter={this.props.raceRefreshCounter}
           onRaceChange={this.props.changeRace} />
         <UserPanel active={this.props.panelId === 'users'}
           urlprefix={this.props.urlprefix}
