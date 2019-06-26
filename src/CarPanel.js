@@ -273,13 +273,13 @@ class EditCarForm extends Component {
 
   componentDidUpdate () {
     console.log('EditCarForm: updated')
-    this.memoizeGetCar(this.props.carToEdit)
+    this.memoizeGetCar(this.props.carToEdit, this.props.editFormTrigger)
     console.log('EditCarForm::componentDidUpdate: state is', this.state)
   }
 
   memoizeGetCar = memoizeOne(
     (p) => {
-      console.log('EditCarForm::memoizedGetCar: submitted car is', p)
+      console.log('EditCarForm::memoizedGetCar: submitted prop is', p)
       this.editCar(this.props.carToEdit)
     }
   )
@@ -288,7 +288,10 @@ class EditCarForm extends Component {
     console.log('EditCarForm::editCar: getting car from server')
     if (rfid === null) {
       // this is a request to clear the form
-      this.setState(this.defaultState)
+      this.setState({
+        ...this.defaultState,
+        'editFormTrigger': this.props.editFormTrigger
+      })
     } else {
       // try to get a car to edit
       try {
@@ -396,7 +399,8 @@ class CarPanel extends Component {
     this.state = {
       'editIsOpen': false,
       'refreshToggle': false,
-      'carToEdit': null
+      'carToEdit': null,
+      'editFormTrigger': 0
     }
   }
 
@@ -415,7 +419,14 @@ class CarPanel extends Component {
     // and propagated to the edit window. As soon as ....
     // is finished, the state is reset to null and the edit window
     // can function as new edit panel again
-    this.setState({ 'carToEdit': rfid })
+    if (this.state.carToEdit === null && rfid === null) {
+      // we had a new, empty careditor, but are asked to clear the form
+      // again, increase trigger, so that the form is refreshed
+      let newtrigger = this.state.editFormTrigger + 1
+      this.setState({ 'editFormTrigger': newtrigger })
+    } else {
+      this.setState({ 'carToEdit': rfid })
+    }
   }
 
   render () {
@@ -456,8 +467,9 @@ class CarPanel extends Component {
               raceId={this.props.raceId}
               scaleIp={this.props.scaleIp}
               toggleCarlistRefresh={this.toggleCarlistRefresh}
-              carToEdit={this.state.carToEdit}
               openCarInEditpanel={this.openCarInEditpanel}
+              carToEdit={this.state.carToEdit}
+              editFormTrigger={this.state.editFormTrigger}
             />
           </Box>
         </Flex>
