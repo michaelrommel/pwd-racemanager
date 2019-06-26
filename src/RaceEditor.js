@@ -324,27 +324,30 @@ class RaceForm extends Component {
         </Flex>
 
         <Flex w={1} wrap column={false}>
-          <Box w={this.state.addPanelIsOpen ? 14 / 20 : 19 / 20}>
-            <Flex wrap>
-              <CarListField
-                fieldname='cars'
-                values={values}
-                handleChange={this.modifyCarList}
-                raceToEdit={raceToEdit}
-                user={user}
-                allCars={values.allCars}
-                urlprefix={urlprefix}
-                addClickHandler={this.addClickHandler}
-                removeClickHandler={this.removeClickHandler}
-                columns={this.state.addPanelIsOpen ? 3 : 4}
-              />
-            </Flex>
+          <Box w={this.state.addPanelIsOpen ? 14 / 20 : 19 / 20}
+            className={'pwd-racecarscontainer'}>
+            <div className={'pwd-racecars'}>
+              <Flex wrap>
+                <CarListField
+                  fieldname='cars'
+                  values={values}
+                  handleChange={this.modifyCarList}
+                  raceToEdit={raceToEdit}
+                  user={user}
+                  allCars={values.allCars}
+                  urlprefix={urlprefix}
+                  addClickHandler={this.addClickHandler}
+                  removeClickHandler={this.removeClickHandler}
+                  columns={this.state.addPanelIsOpen ? 3 : 4}
+                />
+              </Flex>
+            </div>
           </Box>
           <Box w={1 / 20}>
             <Flex column className='drawercontainer'
               justify='flex-start' align='flex-end'>
               <Box w={1} className='drawerspacer' py={2} px={1} />
-              <Box w={1} className='drawerbutton' py={2} px={1}
+              <Box className='drawerbutton' py={2} px={1}
                 onClick={this.openAddPanel} >
                 <Icon icon={this.state.addPanelIsOpen
                   ? 'chevron-right'
@@ -354,8 +357,8 @@ class RaceForm extends Component {
             </Flex>
           </Box>
           <Box w={this.state.addPanelIsOpen ? 5 / 20 : 0}
-            style={drawerStyle}>
-            <Flex column>
+            style={drawerStyle} className={'pwd-racepoolcontainer'}>
+            <Flex column className={'pwd-racepool'}>
               <RemainingCarPool
                 fieldname='cars'
                 values={values}

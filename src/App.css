@@ -58,6 +58,20 @@
   padding-bottom: 0;
 }
 
+.pwd-carlistcontainer {
+  overflow: hidden;
+  position: relative;
+  left: -17px;
+}
+
+.pwd-carlist {
+  height: 94vh;
+  right: -17px;
+  overflow-y: scroll;
+  position: relative;
+}
+
+
 /* The classes for the Race Panel */
 .card-tight {
   padding: 5px;
@@ -91,6 +105,33 @@
   overflow-y: scroll;
   position: relative;
 }
+
+.pwd-racecarscontainer {
+  overflow: hidden;
+  position: relative;
+  left: -17px;
+}
+
+.pwd-racecars {
+  height: 50vh;
+  right: -17px;
+  overflow-y: scroll;
+  position: relative;
+}
+
+.pwd-racepoolcontainer {
+  overflow: hidden;
+  position: relative;
+  left: -17px;
+}
+
+.pwd-racepool {
+  height: 50vh;
+  right: -17px;
+  overflow-y: scroll;
+  position: relative;
+}
+
 
 .pwd-racecard {
   text-align: center;

@@ -436,15 +436,18 @@ class CarPanel extends Component {
     return (
       <div className='carpanel' style={panelActive}>
         <Flex w={1} p={0}>
-          <Box w={this.state.editIsOpen ? 13 / 20 : 19 / 20}>
-            <CarList
-              user={this.props.user}
-              urlprefix={this.props.urlprefix}
-              raceId={this.props.raceId}
-              refreshToggle={this.state.refreshToggle}
-              columns={this.state.editIsOpen ? 2 : 3}
-              openCarInEditpanel={this.openCarInEditpanel}
-            />
+          <Box w={this.state.editIsOpen ? 13 / 20 : 19 / 20}
+            className={'pwd-carlistcontainer'}>
+            <div className={'pwd-carlist'}>
+              <CarList
+                user={this.props.user}
+                urlprefix={this.props.urlprefix}
+                raceId={this.props.raceId}
+                refreshToggle={this.state.refreshToggle}
+                columns={this.state.editIsOpen ? 2 : 3}
+                openCarInEditpanel={this.openCarInEditpanel}
+              />
+            </div>
           </Box>
           <Box w={1 / 20}>
             <Flex column className='drawercontainer'
