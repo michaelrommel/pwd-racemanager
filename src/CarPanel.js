@@ -44,7 +44,7 @@ const CarForm = (props) => {
     errors,
     user,
     scaleIp,
-    openCarInEditPanel
+    openCarInEditpanel
   } = props
 
   const showToast = (msg, intent, icon, timeout) => {
@@ -88,7 +88,7 @@ const CarForm = (props) => {
   )
 
   const handleClear = () => {
-    openCarInEditPanel(null)
+    openCarInEditpanel(null)
   }
 
   return (

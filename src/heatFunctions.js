@@ -29,6 +29,7 @@ const getCurrentHeat = async (urlprefix, user, raceId) => {
     let url = urlprefix + '/heat/current/' + raceId
     let results = await axios.get(url, config)
     let lanes = results.data
+    if (lanes.results === undefined) return lanes
     let laneStatus = await getLaneStatus(urlprefix, user, raceId)
     // now mix in the status information into to original heat info
     for (let i = 0; i < lanes.results.length; i++) {
