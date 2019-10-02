@@ -300,21 +300,21 @@ class RaceForm extends Component {
             <Flex column w={1}>
               <Box w={1} px={1} className={'formbutton-right'}>
                 <Button className={'formbutton-tight'}
-                  id='clearForm' onClick={this.handleClear}
+                  id='race-clearForm' onClick={this.handleClear}
                   type='button'
                   intent={Intent.NONE} large fill
                   text={'Clear Form'} />
               </Box>
               <Box w={1} px={1} className={'formbutton-right'}>
                 <Button className={'formbutton-tight'}
-                  id='resetForm' onClick={handleReset}
+                  id='race-resetForm' onClick={handleReset}
                   type='button'
                   intent={Intent.NONE} large fill
                   text={'Reset Form'} />
               </Box>
               <Box w={1} px={1} className={'formbutton-right'}>
                 <Button className={'formbutton-tight'}
-                  id='saveCar' onClick={this.handleSaveRace}
+                  id='race-saveRace' onClick={this.handleSaveRace}
                   type='button'
                   intent={Intent.PRIMARY} large fill
                   text={isSubmitting ? 'Saving...' : 'Save race'} />

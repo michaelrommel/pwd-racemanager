@@ -222,21 +222,21 @@ const CarForm = (props) => {
           <Flex w={1}>
             <Box w={1} px={1} className={'formbutton-right'}>
               <Button className={'formbutton'}
-                id='clearForm' onClick={handleClear}
+                id='car-clearForm' onClick={handleClear}
                 type='button'
                 intent={Intent.NONE} large fill
                 text={'Clear Form'} />
             </Box>
             <Box w={1} px={1} className={'formbutton-right'}>
               <Button className={'formbutton'}
-                id='resetForm' onClick={handleReset}
+                id='car-resetForm' onClick={handleReset}
                 type='button'
                 intent={Intent.NONE} large fill
                 text={'Reset Form'} />
             </Box>
             <Box w={1} px={1} className={'formbutton-right'}>
               <Button className={'formbutton'}
-                id='saveCar' onClick={handleSubmit}
+                id='car-saveCar' onClick={handleSubmit}
                 type='button'
                 intent={Intent.PRIMARY} large fill
                 text={isSubmitting ? 'Saving...' : 'Save car'} />
