@@ -1,36 +1,36 @@
-import React, { Component } from 'react'
-import { HTMLTable, Intent, Tag } from '@blueprintjs/core'
+import React, { Component } from 'react';
+import { HTMLTable, Intent, Tag } from '@blueprintjs/core';
 
 function Heatrows (props) {
   const laneColour = [
     'Gray', 'Blue', 'Orange', 'Berry'
-  ]
+  ];
   const statusIcons = {
-    'unknown': 'help',
-    'correct': 'tick-circle',
-    'ok': 'tick-circle',
-    'wrong': 'ban-circle'
-  }
+    unknown: 'help',
+    correct: 'tick-circle',
+    ok: 'tick-circle',
+    wrong: 'ban-circle'
+  };
   const statusIntents = {
-    'unknown': Intent.NONE,
-    'correct': Intent.SUCCESS,
-    'ok': Intent.SUCCESS,
-    'wrong': Intent.DANGER
-  }
+    unknown: Intent.NONE,
+    correct: Intent.SUCCESS,
+    ok: Intent.SUCCESS,
+    wrong: Intent.DANGER
+  };
 
-  const heats = props.heat
+  const heats = props.heat;
   if (heats === undefined ||
     heats === null ||
     heats.results === undefined ||
     heats.results.length === 0
-  ) return null
+  ) return null;
 
-  console.log('Heat::Heatrows:: iterating over', heats.results)
+  console.log('Heat::Heatrows:: iterating over', heats.results);
 
   return (
     <React.Fragment>
       {heats.results.map((lane, i) => {
-        lane.status = lane.status || 'unknown'
+        lane.status = lane.status || 'unknown';
         return (
           <tr key={i + 1}>
             <td>{i + 1}</td>
@@ -48,33 +48,33 @@ function Heatrows (props) {
                 </td>
                 <td>{lane.t}</td>
                 <td>{lane.score}</td>
-                </>
+              </>
               : null}
           </tr>
-        )
+        );
       })}
     </React.Fragment>
-  )
+  );
 }
 
 class Heat extends Component {
   constructor (props) {
-    super(props)
+    super(props);
     this.heatStatusIntents = {
-      'nok': Intent.DANGER,
-      'initializing': Intent.NONE,
-      'complete': Intent.PRIMARY,
-      'running': Intent.WARNING,
+      nok: Intent.DANGER,
+      initializing: Intent.NONE,
+      complete: Intent.PRIMARY,
+      running: Intent.WARNING,
       'just finished': Intent.SUCCESS
-    }
+    };
   }
 
   render () {
-    let heatNumber = this.props.heat ? this.props.heat.heat : '-'
-    let heatStatus = this.props.heat ? this.props.heat.status : '-'
-    let heatStatusIntent = this.heatStatusIntents[heatStatus]
+    const heatNumber = this.props.heat ? this.props.heat.heat : '-';
+    const heatStatus = this.props.heat ? this.props.heat.status : '-';
+    const heatStatusIntent = this.heatStatusIntents[heatStatus];
 
-    console.log('Heat: rendering', this.props.heat)
+    console.log('Heat: rendering', this.props.heat);
 
     return (
       <React.Fragment>
@@ -94,7 +94,7 @@ class Heat extends Component {
                 <th>Status</th>
                 <th>Time</th>
                 <th>Score</th>
-                </>
+              </>
               : null}
           </tr></thead>
           <tbody>
@@ -102,8 +102,8 @@ class Heat extends Component {
           </tbody>
         </HTMLTable>
       </React.Fragment>
-    )
+    );
   }
 }
 
-export default Heat
+export default Heat;

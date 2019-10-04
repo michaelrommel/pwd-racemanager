@@ -1,42 +1,42 @@
-import React, { Component } from 'react'
-import { Switch, Navbar, Button, Alignment, Intent } from '@blueprintjs/core'
-import { rehydrateStateWithLocalStorage, saveStateToLocalStorage } from './localstorageFunctions'
+import React, { Component } from 'react';
+import { Switch, Navbar, Button, Alignment, Intent } from '@blueprintjs/core';
+import { rehydrateStateWithLocalStorage, saveStateToLocalStorage } from './localstorageFunctions';
 
 class Navigation extends Component {
   componentDidMount () {
-    console.log('Navigation: mounted')
+    console.log('Navigation: mounted');
     // rehydrate the state from local storage to initialize the app
-    this.setState(rehydrateStateWithLocalStorage('navigation', this.state))
+    this.setState(rehydrateStateWithLocalStorage('navigation', this.state));
     // add event listener to save state to localStorage
     // when user leaves/refreshes the page
     window.addEventListener(
       'beforeunload',
       this.saveStateHandler
-    )
+    );
   }
 
   componentWillUnmount () {
     window.removeEventListener(
       'beforeunload',
       this.saveStateHandler
-    )
+    );
     // saves if component has a chance to unmount
-    this.saveStateHandler()
+    this.saveStateHandler();
   }
 
   saveStateHandler = () => {
-    saveStateToLocalStorage('navigation', this.state)
+    saveStateToLocalStorage('navigation', this.state);
   }
 
   // helper functions to switch between panels, unfortunately I haven't
   // found a way to pass a parameter into a button-click handler
   // calls the changePanel function in the App component
-  toCars = () => { this.props.changePanel('cars') }
-  toRaces = () => { this.props.changePanel('races') }
-  toUsers = () => { this.props.changePanel('users') }
-  toDisplay = () => { this.props.changePanel('display') }
-  toSettings = () => { this.props.changePanel('settings') }
-  toSession = () => { this.props.changePanel('session') }
+  toCars = () => { this.props.changePanel('cars'); }
+  toRaces = () => { this.props.changePanel('races'); }
+  toUsers = () => { this.props.changePanel('users'); }
+  toDisplay = () => { this.props.changePanel('display'); }
+  toSettings = () => { this.props.changePanel('settings'); }
+  toSession = () => { this.props.changePanel('session'); }
 
   render () {
     return (
@@ -75,8 +75,8 @@ class Navigation extends Component {
             large={false} type='button' icon={this.props.user ? 'log-out' : 'log-in'} />
         </Navbar.Group>
       </Navbar>
-    )
+    );
   }
 }
 
-export default Navigation
+export default Navigation;

@@ -1,14 +1,14 @@
-import React, { Component } from 'react'
-import { HTMLTable } from '@blueprintjs/core'
+import React, { Component } from 'react';
+import { HTMLTable } from '@blueprintjs/core';
 
 function Leaderboardrows (props) {
-  const leaders = props.leaderboard
+  const leaders = props.leaderboard;
   if (leaders === undefined ||
     leaders === null ||
     leaders.length === 0
-  ) return null
+  ) return null;
 
-  console.log('Leaderboard::Leaderboardrows:: iterating over', leaders)
+  console.log('Leaderboard::Leaderboardrows:: iterating over', leaders);
 
   return (
     <React.Fragment>
@@ -20,7 +20,7 @@ function Leaderboardrows (props) {
           <td>{leader.cumulatedTime}</td></tr>
       )}
     </React.Fragment>
-  )
+  );
 }
 
 class Leaderboard extends Component {
@@ -38,8 +38,8 @@ class Leaderboard extends Component {
           </tbody>
         </HTMLTable>
       </React.Fragment>
-    )
+    );
   }
 }
 
-export default Leaderboard
+export default Leaderboard;

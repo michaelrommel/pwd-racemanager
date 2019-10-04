@@ -1,27 +1,27 @@
-import React from 'react'
-import { Icon, Intent, Callout, Elevation, H4 } from '@blueprintjs/core'
-import { Flex, Box } from 'reflexbox'
-import { getCodeForName } from './iso3166.js'
+import React from 'react';
+import { Icon, Intent, Callout, Elevation, H4 } from '@blueprintjs/core';
+import { Flex, Box } from 'reflexbox';
+import { getCodeForName } from './iso3166.js';
 
 function DraggableCarCardList (props) {
-  const cars = props.cars
+  const cars = props.cars;
   if (cars === undefined ||
     cars === null ||
     Object.keys(cars).length === 0
-  ) return null
+  ) return null;
 
   return (
     <React.Fragment>
       {Object.keys(cars).map((startNum) => {
-        if (cars[startNum] === undefined) return null
-        let code = getCodeForName(cars[startNum].country)
-        let carIntent
+        if (cars[startNum] === undefined) return null;
+        const code = getCodeForName(cars[startNum].country);
+        let carIntent;
         if (cars[startNum].stat === 'added') {
-          carIntent = Intent.PRIMARY
+          carIntent = Intent.PRIMARY;
         } else if (cars[startNum].stat === 'removed') {
-          carIntent = Intent.DANGER
+          carIntent = Intent.DANGER;
         } else {
-          carIntent = Intent.NONE
+          carIntent = Intent.NONE;
         }
 
         return (
@@ -55,10 +55,10 @@ function DraggableCarCardList (props) {
               </Flex>
             </Callout>
           </Box>
-        )
+        );
       })}
     </React.Fragment>
-  )
+  );
 }
 
-export default DraggableCarCardList
+export default DraggableCarCardList;

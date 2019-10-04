@@ -1,12 +1,12 @@
-import React, { Component } from 'react'
-import { FormGroup, Intent, Button } from '@blueprintjs/core'
-import { Formik, Form } from 'formik'
-import { Flex, Box } from 'reflexbox'
-import axios from 'axios'
-import FormikValidator from './FormikValidator'
-import FieldWithError from './FieldWithError.js'
-import DisplayToast from './DisplayToast'
-import * as Yup from 'yup'
+import React, { Component } from 'react';
+import { FormGroup, Intent, Button } from '@blueprintjs/core';
+import { Formik, Form } from 'formik';
+import { Flex, Box } from 'reflexbox';
+import axios from 'axios';
+import FormikValidator from './FormikValidator';
+import FieldWithError from './FieldWithError.js';
+import DisplayToast from './DisplayToast';
+import * as Yup from 'yup';
 
 const getValidationSchema = (values) => {
   return (
@@ -40,8 +40,8 @@ const getValidationSchema = (values) => {
           (ghsec) => (/^[\x61-\x7a\x30-\x39]*$/.test(ghsec))
         )
     })
-  )
-}
+  );
+};
 
 function ScaleSettingsForm (props) {
   const {
@@ -50,7 +50,7 @@ function ScaleSettingsForm (props) {
     handleSubmit,
     values,
     errors
-  } = props
+  } = props;
 
   return (
     <Form>
@@ -72,7 +72,7 @@ function ScaleSettingsForm (props) {
         text={isSubmitting ? 'Saving...' : 'Save Scale IP'} />
 
     </Form>
-  )
+  );
 }
 
 function AppSettingsForm (props) {
@@ -86,7 +86,7 @@ function AppSettingsForm (props) {
     setFieldValue,
     values,
     errors
-  } = props
+  } = props;
 
   return (
     <Form>
@@ -171,146 +171,146 @@ function AppSettingsForm (props) {
         text={isSubmitting ? 'Saving...' : 'Save Racetrack Configuration'} />
 
     </Form>
-  )
+  );
 }
 
 class SettingsPanel extends Component {
   constructor (props) {
-    super(props)
+    super(props);
     // we need to initialize all form fields with some value
     // otherwise React will complain because the field changes
     // from uncontrolle to controlled input
     this.state = {
-      'appState': '',
-      'jwtSecret': '',
-      'rootpwd': '',
-      'githubClientId': '',
-      'githubClientSecret': '',
-      'netReqId': 1
-    }
+      appState: '',
+      jwtSecret: '',
+      rootpwd: '',
+      githubClientId: '',
+      githubClientSecret: '',
+      netReqId: 1
+    };
   }
 
   componentDidMount () {
-    console.log('SettingsPanel: mounted', this.props.user)
+    console.log('SettingsPanel: mounted', this.props.user);
     // we fire off one request to the server to get the
     // initial values for the form fields based on the
     // current user, if any.
-    let nextId = this.state.netReqId + 1
-    this.setState({ 'netReqId': nextId })
-    this.getAppSettings(nextId)
+    const nextId = this.state.netReqId + 1;
+    this.setState({ netReqId: nextId });
+    this.getAppSettings(nextId);
   }
 
-  componentDidUpdate (prevProps, prevState, snapshot) {
+  componentDidUpdate (prevProps) {
     // If the user changed, fire off another network request
     if (this.props.user !== prevProps.user) {
-      let nextId = this.state.netReqId + 1
-      this.setState({ 'netReqId': nextId })
-      this.getAppSettings(nextId)
+      const nextId = this.state.netReqId + 1;
+      this.setState({ netReqId: nextId });
+      this.getAppSettings(nextId);
     }
   }
 
   async getAppSettings (netReqId) {
-    let settings
+    let settings;
     try {
-      console.log('SettingsPanel: get app settings: id:', netReqId, 'user:', this.props.user)
-      let config
+      console.log('SettingsPanel: get app settings: id:', netReqId, 'user:', this.props.user);
+      let config;
       if (this.props.user) {
         // a user already logged in, use the user token
         config = {
-          headers: { 'Authorization': 'Bearer ' + this.props.user.token }
-        }
-        console.log('SettingsPanel: path /settings')
+          headers: { Authorization: 'Bearer ' + this.props.user.token }
+        };
+        console.log('SettingsPanel: path /settings');
         settings = await axios.get(
-          this.props.urlprefix + '/admin/settings', config)
+          this.props.urlprefix + '/admin/settings', config);
       } else {
         // try to get the view for anonymous users
-        console.log('SettingsPanel: path /init')
+        console.log('SettingsPanel: path /init');
         settings = await axios.get(
-          this.props.urlprefix + '/admin/init')
+          this.props.urlprefix + '/admin/init');
       }
-      console.log('SettingsPanel: got application settings: ', settings.data.rootpwd)
-      let newstate = {
-        'appState': settings.data.appState || '',
-        'jwtSecret': settings.data.jwtSecret || '',
-        'rootpwd': settings.data.rootpwd || '',
-        'githubClientId': settings.data.githubClientId || '',
-        'githubClientSecret': settings.data.githubClientSecret || ''
-      }
+      console.log('SettingsPanel: got application settings: ', settings.data.rootpwd);
+      const newstate = {
+        appState: settings.data.appState || '',
+        jwtSecret: settings.data.jwtSecret || '',
+        rootpwd: settings.data.rootpwd || '',
+        githubClientId: settings.data.githubClientId || '',
+        githubClientSecret: settings.data.githubClientSecret || ''
+      };
       // this will conditionally update the state and if so,
       // trigger a re-render with the new values
-      this.setState((state, props) => {
+      this.setState((state) => {
         if (state.netReqId > netReqId) {
           // another request has already been fired off,
           // so ignore the network response we jost got
           console.log('Ignoring response for', netReqId,
             'because state already has', state.netReqId,
-            'state: ', newstate)
-          return {}
+            'state: ', newstate);
+          return {};
         } else {
           console.log('Accepting response for request for', netReqId,
-            ' state: ', newstate)
-          return newstate
+            ' state: ', newstate);
+          return newstate;
         }
-      })
+      });
       // if the application state is fresh, let's see if we
       // can log in as root user, if we are not already logged in
       if (newstate.appState === 'fresh' && !this.props.user) {
         try {
-          let user = await axios.post(
+          const user = await axios.post(
             this.props.urlprefix + '/auth/local-login',
-            { 'username': 'root',
-              'password': settings.data.rootpwd })
+            {
+              username: 'root',
+              password: settings.data.rootpwd
+            });
           // we got a user, propagate it to the top level state
-          this.props.changeUser(user.data)
-          console.log('Settingspanel: logged in as root user: ')
+          this.props.changeUser(user.data);
+          console.log('Settingspanel: logged in as root user: ');
         } catch (err) {
-          console.log('Settingspanel: error in logging in as root user: ', err)
+          console.log('Settingspanel: error in logging in as root user: ', err);
         }
       }
     } catch (err) {
-      console.log('Settingspanel: error getting application settings: ', err)
+      console.log('Settingspanel: error getting application settings: ', err);
     }
   }
 
   async storeAppSettings (settings) {
     try {
-      let config
-      console.log('SettingsPanel: storing application settings: ')
-      config = {
-        headers: { 'Authorization': 'Bearer ' + this.props.user.token }
-      }
-      settings.appState = 'configured'
-      let response = await axios.post(
-        this.props.urlprefix + '/admin/settings', settings, config)
-      console.log('SettingsPanel: stored application settings: ', response)
+      console.log('SettingsPanel: storing application settings: ');
+      const config = {
+        headers: { Authorization: 'Bearer ' + this.props.user.token }
+      };
+      settings.appState = 'configured';
+      const response = await axios.post(
+        this.props.urlprefix + '/admin/settings', settings, config);
+      console.log('SettingsPanel: stored application settings: ', response);
       if (response.data.success) {
         // success storing the new settings, now
         // reinitialize user, token and JWT
-        this.setState(settings)
+        this.setState(settings);
       }
-      return true
+      return true;
     } catch (err) {
-      console.log('Settingspanel: error storing application settings: ', err)
-      return false
+      console.log('Settingspanel: error storing application settings: ', err);
+      return false;
     }
   }
 
   async connectScale (ip) {
     try {
-      let config
-      console.log('SettingsPanel: connect to scale: ')
-      config = {
-        headers: { 'Authorization': 'Bearer ' + this.props.user.token }
-      }
-      let response = await axios.get('http://' + ip + ':1337/info', config)
+      console.log('SettingsPanel: connect to scale: ');
+      const config = {
+        headers: { Authorization: 'Bearer ' + this.props.user.token }
+      };
+      const response = await axios.get('http://' + ip + ':1337/info', config);
       if (response.data.success) {
         // success getting info from scale
-        this.setState({ 'scaleIp': ip })
+        this.setState({ scaleIp: ip });
       }
-      return true
+      return true;
     } catch (err) {
-      console.log('Settingspanel: error connecting to scale: ', err)
-      return false
+      console.log('Settingspanel: error connecting to scale: ', err);
+      return false;
     }
   }
 
@@ -318,16 +318,16 @@ class SettingsPanel extends Component {
     try {
       if (await this.storeAppSettings(values)) {
         this.showToast('Successfully stored settings',
-          Intent.SUCCESS, 'tick-circle', 2000)
+          Intent.SUCCESS, 'tick-circle', 2000);
       } else {
         this.showToast('Failed to store settings',
-          Intent.DANGER, 'warning-sign', 5000)
+          Intent.DANGER, 'warning-sign', 5000);
       }
-      actions.setSubmitting(false)
+      actions.setSubmitting(false);
     } catch (err) {
       this.showToast('Failed to submit settings',
-        Intent.DANGER, 'warning-sign', 5000)
-      actions.setSubmitting(false)
+        Intent.DANGER, 'warning-sign', 5000);
+      actions.setSubmitting(false);
     }
   }
 
@@ -335,35 +335,35 @@ class SettingsPanel extends Component {
     try {
       if (await this.connectScale(values.scaleIp)) {
         this.showToast('Successfully connnected scale',
-          Intent.SUCCESS, 'tick-circle', 2000)
-        this.props.changeScaleIp(values.scaleIp)
+          Intent.SUCCESS, 'tick-circle', 2000);
+        this.props.changeScaleIp(values.scaleIp);
       } else {
         this.showToast('Failed to get info from scale',
-          Intent.DANGER, 'warning-sign', 5000)
+          Intent.DANGER, 'warning-sign', 5000);
       }
-      actions.setSubmitting(false)
+      actions.setSubmitting(false);
     } catch (err) {
       this.showToast('Failed to connect to scale',
-        Intent.DANGER, 'warning-sign', 5000)
-      actions.setSubmitting(false)
+        Intent.DANGER, 'warning-sign', 5000);
+      actions.setSubmitting(false);
     }
   }
 
   showToast = (msg, intent, icon, timeout) => {
     DisplayToast.show({
-      'message': msg,
-      'intent': intent,
-      'icon': icon,
-      'timeout': timeout
-    })
+      message: msg,
+      intent: intent,
+      icon: icon,
+      timeout: timeout
+    });
   }
 
   render () {
-    const panelActive = this.props.active ? {} : { 'display': 'none' }
-    const initialAppValues = this.state
+    const panelActive = this.props.active ? {} : { display: 'none' };
+    const initialAppValues = this.state;
     const initialScaleValues = {
-      'scaleIp': this.props.scaleIp
-    }
+      scaleIp: this.props.scaleIp
+    };
 
     return (
       <div className='settingspanel' style={panelActive}>
@@ -387,8 +387,8 @@ class SettingsPanel extends Component {
           </Box>
         </Flex>
       </div>
-    )
+    );
   }
 }
 
-export default SettingsPanel
+export default SettingsPanel;

@@ -1,36 +1,36 @@
-import React, { Component } from 'react'
-import CarPanel from './CarPanel'
-import RacePanel from './RacePanel'
-import UserPanel from './UserPanel'
-import DisplayPanel from './DisplayPanel'
-import SettingsPanel from './SettingsPanel'
-import SessionPanel from './SessionPanel'
-import { rehydrateStateWithLocalStorage, saveStateToLocalStorage } from './localstorageFunctions'
+import React, { Component } from 'react';
+import CarPanel from './CarPanel';
+import RacePanel from './RacePanel';
+import UserPanel from './UserPanel';
+import DisplayPanel from './DisplayPanel';
+import SettingsPanel from './SettingsPanel';
+import SessionPanel from './SessionPanel';
+import { rehydrateStateWithLocalStorage, saveStateToLocalStorage } from './localstorageFunctions';
 
 class Panels extends Component {
   componentDidMount () {
-    console.log('Panels: mounted')
+    console.log('Panels: mounted');
     // rehydrate the state from local storage to initialize the app
-    rehydrateStateWithLocalStorage('panels', this.state)
+    rehydrateStateWithLocalStorage('panels', this.state);
     // add event listener to save state to localStorage
     // when user leaves/refreshes the page
     window.addEventListener(
       'beforeunload',
       this.saveStateHandler
-    )
+    );
   }
 
   componentWillUnmount () {
     window.removeEventListener(
       'beforeunload',
       this.saveStateHandler
-    )
+    );
     // saves if component has a chance to unmount
-    this.saveStateHandler()
+    this.saveStateHandler();
   }
 
   saveStateHandler = () => {
-    saveStateToLocalStorage('panels', this.state)
+    saveStateToLocalStorage('panels', this.state);
   }
 
   render () {
@@ -71,8 +71,8 @@ class Panels extends Component {
           user={this.props.user}
           changeUser={this.props.changeUser} />
       </React.Fragment>
-    )
+    );
   }
 }
 
-export default Panels
+export default Panels;

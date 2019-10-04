@@ -1,37 +1,37 @@
-import React, { Component } from 'react'
-import { Callout, Elevation, Button, Tag, Intent, H3, H4 } from '@blueprintjs/core'
-import { Flex, Box } from 'reflexbox'
-import axios from 'axios'
-import memoizeOne from 'memoize-one'
-import DisplayToast from './DisplayToast'
+import React, { Component } from 'react';
+import { Callout, Elevation, Button, Tag, Intent, H3, H4 } from '@blueprintjs/core';
+import { Flex, Box } from 'reflexbox';
+import axios from 'axios';
+import memoizeOne from 'memoize-one';
+import DisplayToast from './DisplayToast';
 
 function RaceCardList (props) {
-  const races = props.races
+  const races = props.races;
   if (races === undefined ||
     races === null ||
     races.length === 0
-  ) return null
+  ) return null;
 
   const getIntentFor = (stat) => {
     if (stat === 'out of sync') {
-      return Intent.WARNING
+      return Intent.WARNING;
     } else if (stat === 'finished') {
-      return Intent.NONE
+      return Intent.NONE;
     } else if (stat === 'in sync') {
-      return Intent.PRIMARY
+      return Intent.PRIMARY;
     } else if (stat === 'locked') {
-      return Intent.DANGER
+      return Intent.DANGER;
     } else if (stat === 'running') {
-      return Intent.SUCCESS
+      return Intent.SUCCESS;
     }
-  }
+  };
 
-  let stat
+  let stat;
 
   return (
     <React.Fragment>
       {races.map((race) => {
-        stat = Object.values(race)[0].raceStatus
+        stat = Object.values(race)[0].raceStatus;
         return (
           <Box p={2} w={1 / 4} key={Object.keys(race)[0]}>
             <Callout
@@ -77,108 +77,108 @@ function RaceCardList (props) {
               </Flex>
             </Callout>
           </Box>
-        )
+        );
       })}
     </React.Fragment>
-  )
+  );
 }
 
 class RaceList extends Component {
   constructor (props) {
-    super(props)
+    super(props);
     this.state = {
-      'races': []
-    }
+      races: []
+    };
   }
 
   componentDidMount () {
-    console.log('RaceList: mounted.')
-    this.memoizeGetRaces(this.props.user, this.props.raceRefreshCounter)
+    console.log('RaceList: mounted.');
+    this.memoizeGetRaces(this.props.user, this.props.raceRefreshCounter);
   }
 
   componentDidUpdate () {
-    console.log('RaceList: updated')
-    this.memoizeGetRaces(this.props.user, this.props.raceRefreshCounter)
-    console.log('RaceList::componentDidUpdate: briefRaces is', this.state.briefRaces)
+    console.log('RaceList: updated');
+    this.memoizeGetRaces(this.props.user, this.props.raceRefreshCounter);
+    console.log('RaceList::componentDidUpdate: briefRaces is', this.state.briefRaces);
   }
 
   memoizeGetRaces = memoizeOne(
     (p) => {
-      console.log('RaceList::memoizedGetRaces: props are', p)
-      this.getRaces()
+      console.log('RaceList::memoizedGetRaces: props are', p);
+      this.getRaces();
     }
   )
 
   getRaces = async () => {
-    console.log('RaceList::getRaces: getting races from server')
+    console.log('RaceList::getRaces: getting races from server');
     try {
       if (!this.props.user) {
-        console.log('RaceList::getRaces: not logged in, cannot get!')
-        return false
+        console.log('RaceList::getRaces: not logged in, cannot get!');
+        return false;
       }
-      let config = {
-        headers: { 'Authorization': 'Bearer ' + this.props.user.token }
-      }
-      let response = await axios.get(this.props.urlprefix + '/race', config)
-      this.setState({ 'races': response.data })
-      return true
+      const config = {
+        headers: { Authorization: 'Bearer ' + this.props.user.token }
+      };
+      const response = await axios.get(this.props.urlprefix + '/race', config);
+      this.setState({ races: response.data });
+      return true;
     } catch (err) {
-      console.log('Error getting race list: ', err)
-      return false
+      console.log('Error getting race list: ', err);
+      return false;
     }
   }
 
   initRace = async (raceId) => {
-    console.log('RaceList::initRace: initializing race')
+    console.log('RaceList::initRace: initializing race');
     try {
       if (!this.props.user) {
-        console.log('RaceList::initRace: not logged in, cannot mark!')
-        throw (new Error('Not Logged In'))
+        console.log('RaceList::initRace: not logged in, cannot mark!');
+        throw (new Error('Not Logged In'));
       }
-      let config = {
-        headers: { 'Authorization': 'Bearer ' + this.props.user.token }
-      }
-      let response = await axios.post(
-        this.props.urlprefix + '/race/init/' + raceId, {}, config)
+      const config = {
+        headers: { Authorization: 'Bearer ' + this.props.user.token }
+      };
+      const response = await axios.post(
+        this.props.urlprefix + '/race/init/' + raceId, {}, config);
       if (response) {
         this.showToast('Initialized race', Intent.SUCCESS,
-          'tick-circle', 1000)
+          'tick-circle', 1000);
       } else {
         this.showToast('Error initializing race', Intent.DANGER,
-          'warning sign', 3000)
+          'warning sign', 3000);
       }
     } catch (err) {
-      console.log('RaceList::initRace: Error initializing race: ', err)
-      return false
+      console.log('RaceList::initRace: Error initializing race: ', err);
+      return false;
     }
   }
 
   showToast = (msg, intent, icon, timeout) => {
     DisplayToast.show({
-      'message': msg,
-      'intent': intent,
-      'icon': icon,
-      'timeout': timeout
-    })
+      message: msg,
+      intent: intent,
+      icon: icon,
+      timeout: timeout
+    });
   }
 
   editRaceClickHandler = (e) => {
-    console.log(e.currentTarget.id)
-    this.props.openRaceInEditpanel(e.currentTarget.id)
+    console.log(e.currentTarget.id);
+    this.props.openRaceInEditpanel(e.currentTarget.id);
   }
 
   runRaceClickHandler = (e) => {
-    console.log(e.currentTarget.id)
-    this.props.openRaceInRunpanel(e.currentTarget.id.slice(4))
-    e.stopPropagation()
+    console.log(e.currentTarget.id);
+    this.props.openRaceInRunpanel(e.currentTarget.id.slice(4));
+    e.stopPropagation();
   }
 
   initRaceClickHandler = (e) => {
-    console.log(e.currentTarget.id)
+    console.log(e.currentTarget.id);
     if (e.currentTarget.id !== undefined) {
-      this.initRace(e.currentTarget.id.slice(5))
+      this.initRace(e.currentTarget.id.slice(5));
     }
-    e.stopPropagation()
+    e.stopPropagation();
   }
 
   render () {
@@ -193,8 +193,8 @@ class RaceList extends Component {
           />
         </Flex>
       </React.Fragment>
-    )
+    );
   }
 }
 
-export default RaceList
+export default RaceList;

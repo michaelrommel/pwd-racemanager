@@ -1,10 +1,10 @@
-import React, { Component } from 'react'
-import { Spinner, FormGroup, Button, Card, InputGroup, Intent, Tooltip, HTMLTable, H5 } from '@blueprintjs/core'
-import { Formik, Form } from 'formik'
-import { Flex, Box } from 'reflexbox'
-import DisplayToast from './DisplayToast'
-import axios from 'axios'
-import * as Yup from 'yup'
+import React, { Component } from 'react';
+import { Spinner, FormGroup, Button, Card, InputGroup, Intent, Tooltip, HTMLTable, H5 } from '@blueprintjs/core';
+import { Formik, Form } from 'formik';
+import { Flex, Box } from 'reflexbox';
+import DisplayToast from './DisplayToast';
+import axios from 'axios';
+import * as Yup from 'yup';
 
 const getValidationSchema = () => {
   return (
@@ -14,8 +14,8 @@ const getValidationSchema = () => {
       password: Yup.string()
         .required('Required')
     })
-  )
-}
+  );
+};
 
 function LoginForm (props) {
   const {
@@ -25,11 +25,11 @@ function LoginForm (props) {
     setFieldValue,
     values,
     isValid
-  } = props
+  } = props;
 
   const handleLockClick = () => {
-    setFieldValue('showPassword', !values.showPassword, false)
-  }
+    setFieldValue('showPassword', !values.showPassword, false);
+  };
 
   const LockButton = (
     <Tooltip content={values.showPassword ? 'Hide Password' : 'Show Password'}>
@@ -40,7 +40,7 @@ function LoginForm (props) {
         onClick={handleLockClick}
       />
     </Tooltip>
-  )
+  );
 
   return (
     <Form>
@@ -74,60 +74,62 @@ function LoginForm (props) {
         </Flex>
       </FormGroup>
     </Form>
-  )
+  );
 }
 
 class SessionPanel extends Component {
   constructor (props) {
-    super(props)
+    super(props);
     this.emptystate = {
-      'showPassword': false,
-      'username': '',
-      'password': ''
-    }
-    this.state = { ...this.emptystate }
-    this.ValidationSchema = getValidationSchema()
+      showPassword: false,
+      username: '',
+      password: ''
+    };
+    this.state = { ...this.emptystate };
+    this.ValidationSchema = getValidationSchema();
   }
 
   showToast = (msg, intent, icon) => {
-    DisplayToast.show({ 'message': msg, 'intent': intent, 'icon': icon })
+    DisplayToast.show({ message: msg, intent: intent, icon: icon });
   }
 
-  handleLogoutClick = (e) => {
-    console.log('Sessionpanel: logging out user: ' + this.props.user)
-    this.setState(this.emptystate)
-    this.props.changeUser(null)
+  handleLogoutClick = () => {
+    console.log('Sessionpanel: logging out user: ' + this.props.user);
+    this.setState(this.emptystate);
+    this.props.changeUser(null);
   }
 
   handleLoginClick = async (values, actions) => {
-    const username = values.username
-    const password = values.password
+    const username = values.username;
+    const password = values.password;
 
-    console.log('Sessionpanel: logging in user: ' + username)
+    console.log('Sessionpanel: logging in user: ' + username);
     try {
-      let user = await axios.post(
+      const user = await axios.post(
         this.props.urlprefix + '/auth/local-login',
-        { 'username': username,
-          'password': password })
-      this.props.changeUser(user.data)
-      actions.setSubmitting(false)
-      this.setState(this.emptystate)
-      actions.resetForm(this.emptyState)
+        {
+          username: username,
+          password: password
+        });
+      this.props.changeUser(user.data);
+      actions.setSubmitting(false);
+      this.setState(this.emptystate);
+      actions.resetForm(this.emptyState);
     } catch (err) {
-      console.log('Sessionpanel: error in logging in: ', err)
-      this.showToast('Login error!', Intent.DANGER, 'warning-sign')
-      actions.setSubmitting(false)
+      console.log('Sessionpanel: error in logging in: ', err);
+      this.showToast('Login error!', Intent.DANGER, 'warning-sign');
+      actions.setSubmitting(false);
     }
   }
 
   render () {
-    const panelActive = this.props.active ? {} : { 'display': 'none' }
+    const panelActive = this.props.active ? {} : { display: 'none' };
 
-    const loggedIn = this.props.user
-    const hiddenIfLoggedIn = loggedIn ? { 'display': 'none' } : {}
-    const hiddenIfLoggedOut = !loggedIn ? { 'display': 'none' } : {}
+    const loggedIn = this.props.user;
+    const hiddenIfLoggedIn = loggedIn ? { display: 'none' } : {};
+    const hiddenIfLoggedOut = !loggedIn ? { display: 'none' } : {};
 
-    const initialValues = this.state
+    const initialValues = this.state;
 
     return (
       <div className='sessionpanel' style={panelActive}>
@@ -165,8 +167,8 @@ class SessionPanel extends Component {
           </Box>
         </Flex>
       </div>
-    )
+    );
   }
 }
 
-export default SessionPanel
+export default SessionPanel;

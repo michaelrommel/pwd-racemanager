@@ -1,22 +1,22 @@
-import React from 'react'
-import { Tag, Intent, Card, Elevation } from '@blueprintjs/core'
-import { Flex, Box } from 'reflexbox'
-import { getCodeForName } from './iso3166.js'
+import React from 'react';
+import { Tag, Intent, Card, Elevation } from '@blueprintjs/core';
+import { Flex, Box } from 'reflexbox';
+import { getCodeForName } from './iso3166.js';
 
 function SelectableCarCardList (props) {
-  const cars = props.cars
+  const cars = props.cars;
   if (cars === undefined ||
     cars === null ||
     Object.keys(cars).length === 0
-  ) return null
+  ) return null;
 
-  let tags
+  let tags;
 
   return (
     <React.Fragment>
       {Object.keys(cars).map((startNum) => {
-        if (cars[startNum] === undefined) return null
-        let code = getCodeForName(cars[startNum].country)
+        if (cars[startNum] === undefined) return null;
+        const code = getCodeForName(cars[startNum].country);
         if (cars[startNum].races) {
           tags = cars[startNum].races.map(
             (tag) => <Tag
@@ -24,9 +24,9 @@ function SelectableCarCardList (props) {
               round
               intent={Intent.PRIMARY}
               className={'pwd-racetag'}
-            >{tag}</Tag>)
+            >{tag}</Tag>);
         } else {
-          tags = ''
+          tags = '';
         }
         return (
           <Box w={1 / props.columns} p={1} key={'pool-' + cars[startNum].rf}>
@@ -49,10 +49,10 @@ function SelectableCarCardList (props) {
               </Flex>
             </Card>
           </Box>
-        )
+        );
       })}
     </React.Fragment>
-  )
+  );
 }
 
-export default SelectableCarCardList
+export default SelectableCarCardList;

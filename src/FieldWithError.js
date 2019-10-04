@@ -1,6 +1,6 @@
-import React from 'react'
-import { Tooltip, InputGroup, Intent, Icon, Button } from '@blueprintjs/core'
-import { Flex, Box } from 'reflexbox'
+import React from 'react';
+import { Tooltip, InputGroup, Intent, Icon, Button } from '@blueprintjs/core';
+import { Flex, Box } from 'reflexbox';
 
 function FieldWithError (props) {
   const {
@@ -12,11 +12,11 @@ function FieldWithError (props) {
     setFieldValue,
     lock,
     disabled
-  } = props
+  } = props;
 
   const handleLockClick = () => {
-    setFieldValue('showPassword', !values.showPassword, false)
-  }
+    setFieldValue('showPassword', !values.showPassword, false);
+  };
 
   const LockButton = (
     <Tooltip content={`${values.showPassword ? 'Hide' : 'Show'} Password`}>
@@ -27,7 +27,7 @@ function FieldWithError (props) {
         onClick={handleLockClick}
       />
     </Tooltip>
-  )
+  );
 
   return (
     <Flex align={'center'}>
@@ -46,7 +46,7 @@ function FieldWithError (props) {
         {errors[fieldname]}
       </Box>
     </Flex>
-  )
+  );
 }
 
-export default FieldWithError
+export default FieldWithError;

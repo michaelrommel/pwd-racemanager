@@ -1,15 +1,15 @@
-import React, { Component } from 'react'
-import { Icon, FormGroup, Button, Intent } from '@blueprintjs/core'
-import { Formik, Form } from 'formik'
-import { Flex, Box } from 'reflexbox'
-import * as Yup from 'yup'
-import memoizeOne from 'memoize-one'
-import axios from 'axios'
-import FormikValidator from './FormikValidator'
-import FieldWithError from './FieldWithError.js'
-import DisplayToast from './DisplayToast'
-import CarListField from './CarListField'
-import RemainingCarPool from './RemainingCarPool'
+import React, { Component } from 'react';
+import { Icon, FormGroup, Button, Intent } from '@blueprintjs/core';
+import { Formik, Form } from 'formik';
+import { Flex, Box } from 'reflexbox';
+import * as Yup from 'yup';
+import memoizeOne from 'memoize-one';
+import axios from 'axios';
+import FormikValidator from './FormikValidator';
+import FieldWithError from './FieldWithError.js';
+import DisplayToast from './DisplayToast';
+import CarListField from './CarListField';
+import RemainingCarPool from './RemainingCarPool';
 
 const getValidationSchema = () => {
   return (
@@ -30,8 +30,8 @@ const getValidationSchema = () => {
       finalists: Yup.number()
         .required('Required')
     })
-  )
-}
+  );
+};
 
 /*
       cars: Yup.array()
@@ -41,137 +41,137 @@ const getValidationSchema = () => {
 
 class RaceForm extends Component {
   constructor (props) {
-    super(props)
+    super(props);
     this.state = {
-      'addPanelIsOpen': false
-    }
+      addPanelIsOpen: false
+    };
   }
 
   componentDidMount () {
-    console.log('RaceEditor::RaceForm: mounted')
+    console.log('RaceEditor::RaceForm: mounted');
     // the form has been re-initialized with new values,
     // trigger the validation of the field gotten in props
-    this.evaluateStatus(true)
+    this.evaluateStatus(true);
   }
 
-  componentDidUpdate (prevProps, prevState, snapshot) {
+  componentDidUpdate (prevProps) {
     if (prevProps.initialValues !== this.props.initialValues) {
-      console.log('RaceEditor::RaceForm: initialValues changed')
+      console.log('RaceEditor::RaceForm: initialValues changed');
       // the form has been re-initialized with new values,
       // trigger the validation of the field gotten in props
-      this.evaluateStatus(true)
+      this.evaluateStatus(true);
     }
   }
 
   handleClear = () => {
-    this.props.openRaceInEditpanel(null)
+    this.props.openRaceInEditpanel(null);
   }
 
   handleSaveRace = () => {
-    this.props.submitForm()
-    this.evaluateStatus(false)
+    this.props.submitForm();
+    this.evaluateStatus(false);
   }
 
   modifyCarList = (p) => {
     // TODO: code to manipulate the car list
-    console.log(p)
+    console.log(p);
   }
 
   openAddPanel = () => {
-    this.setState({ 'addPanelIsOpen': !this.state.addPanelIsOpen })
+    this.setState({ addPanelIsOpen: !this.state.addPanelIsOpen });
   }
 
   evaluateStatus = (addSuggested) => {
-    let newcars = { ...this.props.values.cars }
-    let newAllCars = { ...this.props.values.allCars }
-    let count = Object.keys(newcars).length
-    let shouldBeIn
+    const newcars = { ...this.props.values.cars };
+    const newAllCars = { ...this.props.values.allCars };
+    let count = Object.keys(newcars).length;
+    let shouldBeIn;
 
     if (Object.keys(newAllCars).length === 0 ||
-        Object.keys(newcars).length === 0) return null
+        Object.keys(newcars).length === 0) return null;
 
     Object.keys(this.props.values.allCars).forEach((carid) => {
       // check whether the car should be in the race
-      let races = this.props.values.allCars[carid].races
+      const races = this.props.values.allCars[carid].races;
       if (races !== undefined && races.length > 0) {
         shouldBeIn = races.reduce((acc, cur) => {
-          acc = acc || (cur === this.props.values.id)
-          return acc
-        }, false)
+          acc = acc || (cur === this.props.values.id);
+          return acc;
+        }, false);
       } else {
-        shouldBeIn = false
+        shouldBeIn = false;
       }
       // check whether the car is actually in the stored
       // configuration on the server
-      let isIn = Object.values(this.props.initialValues.cars).reduce((acc, cur) => {
-        acc = acc || (cur === carid)
-        return acc
-      }, false)
+      const isIn = Object.values(this.props.initialValues.cars).reduce((acc, cur) => {
+        acc = acc || (cur === carid);
+        return acc;
+      }, false);
       // reset a default value
-      newAllCars[carid].stat = ''
+      newAllCars[carid].stat = '';
       // compare
       if (shouldBeIn && !isIn) {
         if (addSuggested) {
           // add if it is allowed at the beginning when the initialValues
           // are set
-          let isAlreadyProposed = Object.values(this.props.values.cars)
+          const isAlreadyProposed = Object.values(this.props.values.cars)
             .reduce((acc, cur) => {
-              acc = acc || (cur === carid)
-              return acc
-            }, false)
+              acc = acc || (cur === carid);
+              return acc;
+            }, false);
           if (!isAlreadyProposed) {
-            newcars[++count] = carid
+            newcars[++count] = carid;
           }
         }
-        newAllCars[carid].stat = 'added'
+        newAllCars[carid].stat = 'added';
       }
       if (!shouldBeIn && isIn) {
         // flag as to be removed
-        newAllCars[carid].stat = 'removed'
+        newAllCars[carid].stat = 'removed';
       }
-    })
+    });
     if (addSuggested) {
-      this.props.setFieldValue('cars', newcars, false)
-      this.props.setFieldValue('countCars', count, false)
+      this.props.setFieldValue('cars', newcars, false);
+      this.props.setFieldValue('countCars', count, false);
     }
-    this.props.setFieldValue('allCars', newAllCars, false)
+    this.props.setFieldValue('allCars', newAllCars, false);
   }
 
   addClickHandler = (e) => {
-    console.log('RaceEditor::addClickHandler')
-    let id = e.currentTarget.id.slice(5)
-    console.log('Adding: ', id)
-    let newcars = {}
-    let count = 0
+    console.log('RaceEditor::addClickHandler');
+    const id = e.currentTarget.id.slice(5);
+    console.log('Adding: ', id);
+    const newcars = {};
+    let count = 0;
     Object.keys(this.props.values.cars).forEach((key) => {
-      count++
-      newcars[count] = this.props.values.cars[key]
-    })
-    newcars[++count] = id
-    console.log('new cars: ', JSON.stringify(newcars, null, 2))
-    this.props.setFieldValue('cars', newcars)
-    this.props.setFieldValue('countCars', count)
+      count++;
+      newcars[count] = this.props.values.cars[key];
+    });
+    newcars[++count] = id;
+    console.log('new cars: ', JSON.stringify(newcars, null, 2));
+    this.props.setFieldValue('cars', newcars);
+    this.props.setFieldValue('countCars', count);
   }
 
   removeClickHandler = (e) => {
-    console.log('RaceEditor::removeClickHandler')
-    console.log('Removing: ', e.currentTarget.id)
-    let newcars = {}
-    let count = 0
+    console.log('RaceEditor::removeClickHandler');
+    console.log('Removing: ', e.currentTarget.id);
+    const newcars = {};
+    let count = 0;
     Object.keys(this.props.values.cars).forEach((key) => {
       if (this.props.values.cars[key] !== e.currentTarget.id) {
-        count++
-        newcars[count] = this.props.values.cars[key]
+        count++;
+        newcars[count] = this.props.values.cars[key];
       }
-    })
-    console.log('Remaining cars: ', JSON.stringify(newcars, null, 2))
-    this.props.setFieldValue('cars', newcars)
-    this.props.setFieldValue('countCars', count)
-    e.stopPropagation()
+    });
+    console.log('Remaining cars: ', JSON.stringify(newcars, null, 2));
+    this.props.setFieldValue('cars', newcars);
+    this.props.setFieldValue('countCars', count);
+    e.stopPropagation();
   }
 
   render () {
-    let {
+    const {
       isSubmitting,
       handleReset,
       handleChange,
@@ -183,9 +183,9 @@ class RaceForm extends Component {
       user,
       urlprefix,
       raceToEdit
-    } = this.props
+    } = this.props;
 
-    const drawerStyle = this.state.addPanelIsOpen ? {} : { 'display': 'none' }
+    const drawerStyle = this.state.addPanelIsOpen ? {} : { display: 'none' };
 
     return (
       <Form>
@@ -375,128 +375,128 @@ class RaceForm extends Component {
           </Box>
         </Flex>
       </Form>
-    )
+    );
   }
 }
 
 class RaceEditor extends Component {
   constructor (props) {
-    super(props)
+    super(props);
     this.defaultState = {
-      'id': '',
-      'description': '',
-      'lanes': 4,
-      'countCars': 0,
-      'rounds': 1,
-      'raceStatus': '-',
-      'cars': [],
-      'startAt': 1,
-      'finalists': 7,
-      'newrace': true
-    }
-    this.state = this.defaultState
+      id: '',
+      description: '',
+      lanes: 4,
+      countCars: 0,
+      rounds: 1,
+      raceStatus: '-',
+      cars: [],
+      startAt: 1,
+      finalists: 7,
+      newrace: true
+    };
+    this.state = this.defaultState;
   }
 
   componentDidMount () {
-    console.log('RaceEditor: mounted.')
-    this.memoizeGetRace(this.props.raceToEdit, this.props.raceRefreshCounter)
+    console.log('RaceEditor: mounted.');
+    this.memoizeGetRace(this.props.raceToEdit, this.props.raceRefreshCounter);
   }
 
   componentDidUpdate () {
-    console.log('RaceEditor: updated')
-    this.memoizeGetRace(this.props.raceToEdit, this.props.raceRefreshCounter)
-    console.log('RaceEditor::componentDidUpdate: state is', this.state)
+    console.log('RaceEditor: updated');
+    this.memoizeGetRace(this.props.raceToEdit, this.props.raceRefreshCounter);
+    console.log('RaceEditor::componentDidUpdate: state is', this.state);
   }
 
   memoizeGetRace = memoizeOne(
     (p) => {
-      console.log('RaceEditor::memoizedGetRace: submitted race is', p)
-      this.editRace(this.props.raceToEdit)
+      console.log('RaceEditor::memoizedGetRace: submitted race is', p);
+      this.editRace(this.props.raceToEdit);
     }
   )
 
   editRace = async (id) => {
-    console.log('RaceEditor::editRace: getting race from server')
-    let allCars
-    let race
+    console.log('RaceEditor::editRace: getting race from server');
+    let allCars;
+    let race;
     if (id === null) {
       // this is a request to clear the form
-      this.setState(this.defaultState)
+      this.setState(this.defaultState);
     } else {
       // try to get a race to edit
       try {
         if (!this.props.user) {
-          console.log('RaceEditor::editRace: not logged in, cannot get!')
-          throw (new Error('Not Logged In'))
+          console.log('RaceEditor::editRace: not logged in, cannot get!');
+          throw (new Error('Not Logged In'));
         }
-        let config = {
-          headers: { 'Authorization': 'Bearer ' + this.props.user.token }
-        }
-        let response = await axios.get(
-          this.props.urlprefix + '/race/' + id, config)
+        const config = {
+          headers: { Authorization: 'Bearer ' + this.props.user.token }
+        };
+        const response = await axios.get(
+          this.props.urlprefix + '/race/' + id, config);
         // we got one race object in response.data
-        race = response.data
-        race.newrace = false
-        race.id = id
+        race = response.data;
+        race.newrace = false;
+        race.id = id;
       } catch (err) {
-        console.log('RaceEditor::editRace: Error getting race ', err)
-        return false
+        console.log('RaceEditor::editRace: Error getting race ', err);
+        return false;
       }
     }
-    console.log('RaceEditor::editRace: getting cars from server')
+    console.log('RaceEditor::editRace: getting cars from server');
     try {
       if (!this.props.user) {
-        console.log('RaceEditor::editRace: not logged in, cannot get!')
-        return false
+        console.log('RaceEditor::editRace: not logged in, cannot get!');
+        return false;
       }
-      let config = {
-        headers: { 'Authorization': 'Bearer ' + this.props.user.token }
-      }
-      let response = await axios.get(
-        this.props.urlprefix + '/car', config)
+      const config = {
+        headers: { Authorization: 'Bearer ' + this.props.user.token }
+      };
+      const response = await axios.get(
+        this.props.urlprefix + '/car', config);
       // we got an array of car objects in response.data
-      allCars = response.data.reduce((acc, cur, i) => {
-        acc[Object.keys(cur)[0]] = Object.values(cur)[0]
-        return acc
-      })
+      allCars = response.data.reduce((acc, cur) => {
+        acc[Object.keys(cur)[0]] = Object.values(cur)[0];
+        return acc;
+      });
     } catch (err) {
-      console.log('RaceEditor::editRace: Error getting car list: ', err)
-      return false
+      console.log('RaceEditor::editRace: Error getting car list: ', err);
+      return false;
     }
     // allCars is a dictionary with the rfid as key
-    this.setState({ 'allCars': allCars, ...race })
+    this.setState({ allCars: allCars, ...race });
   }
 
   async saveRace (race) {
     try {
       if (!this.props.user) {
-        console.log('RaceEditor::saveRace: not logged in, cannot save!')
-        throw (new Error('Not Logged In'))
+        console.log('RaceEditor::saveRace: not logged in, cannot save!');
+        throw (new Error('Not Logged In'));
       }
-      console.log('RaceEditor::saveRace: saving a race: ' + race)
-      let config = {
-        headers: { 'Authorization': 'Bearer ' + this.props.user.token }
-      }
+      console.log('RaceEditor::saveRace: saving a race: ' + race);
+      const config = {
+        headers: { Authorization: 'Bearer ' + this.props.user.token }
+      };
       // delete temporary additions
-      let raceToSave = { ...race }
-      delete raceToSave.allCars
-      delete raceToSave.newrace
-      let response
+      const raceToSave = { ...race };
+      delete raceToSave.allCars;
+      delete raceToSave.newrace;
+      let response;
       if (this.state.newrace) {
         response = await axios.post(
-          this.props.urlprefix + '/race/' + race.id, raceToSave, config)
+          this.props.urlprefix + '/race/' + race.id, raceToSave, config);
       } else {
         // TODO: Change this back to put and add update function
         response = await axios.post(
-          this.props.urlprefix + '/race/' + race.id, raceToSave, config)
+          this.props.urlprefix + '/race/' + race.id, raceToSave, config);
       }
-      console.log('RaceEditor::saveRace: stored race:', response)
-      this.setState(race)
-      this.props.incrementRaceRefresh()
-      return true
+      console.log('RaceEditor::saveRace: stored race:', response);
+      this.setState(race);
+      this.props.incrementRaceRefresh();
+      return true;
     } catch (err) {
-      console.log('RaceEditor::saveRace: error storing application settings: ', err)
-      return false
+      console.log('RaceEditor::saveRace: error storing application settings: ', err);
+      return false;
     }
   }
 
@@ -504,34 +504,34 @@ class RaceEditor extends Component {
     try {
       if (await this.saveRace(values)) {
         this.showToast('Successfully saved the race',
-          Intent.SUCCESS, 'tick-circle', 2000)
+          Intent.SUCCESS, 'tick-circle', 2000);
       } else {
         this.showToast('Failed to save the race',
-          Intent.DANGER, 'warning-sign', 5000)
+          Intent.DANGER, 'warning-sign', 5000);
       }
-      actions.setSubmitting(false)
+      actions.setSubmitting(false);
     } catch (err) {
       this.showToast('Failed to submit the race',
-        Intent.DANGER, 'warning-sign', 5000)
-      actions.setSubmitting(false)
+        Intent.DANGER, 'warning-sign', 5000);
+      actions.setSubmitting(false);
     }
   }
 
   showToast = (msg, intent, icon, timeout) => {
     DisplayToast.show({
-      'message': msg,
-      'intent': intent,
-      'icon': icon,
-      'timeout': timeout
-    })
+      message: msg,
+      intent: intent,
+      icon: icon,
+      timeout: timeout
+    });
   }
 
   render () {
-    const initialValues = this.state
+    const initialValues = this.state;
     const functions = {
       addClickHandler: this.addClickHandler,
       removeClickHandler: this.removeClickHandler
-    }
+    };
 
     return (
       <Formik
@@ -547,8 +547,8 @@ class RaceEditor extends Component {
           />
         }
       />
-    )
+    );
   }
 }
 
-export default RaceEditor
+export default RaceEditor;

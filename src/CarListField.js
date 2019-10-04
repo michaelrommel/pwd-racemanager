@@ -1,19 +1,19 @@
-import React, { Component } from 'react'
-import DraggableCarCardList from './DraggableCarCardList'
+import React, { Component } from 'react';
+import DraggableCarCardList from './DraggableCarCardList';
 
 class CarListField extends Component {
   render () {
     // Here we can add more information from the stored car details
     // before passing the object onwards to the list renderer
-    let originalCars = this.props.values[this.props.fieldname]
-    let amendedCars = {}
+    const originalCars = this.props.values[this.props.fieldname];
+    const amendedCars = {};
     if (this.props.allCars === undefined) {
       // return, because the list would be uninformative
-      return null
+      return null;
     }
     Object.keys(originalCars).forEach((startNum) => {
-      amendedCars[startNum] = this.props.allCars[originalCars[startNum]]
-    })
+      amendedCars[startNum] = this.props.allCars[originalCars[startNum]];
+    });
 
     return (
       <DraggableCarCardList
@@ -22,8 +22,8 @@ class CarListField extends Component {
         removeClickHandler={this.props.removeClickHandler}
         columns={this.props.columns}
       />
-    )
+    );
   }
 }
 
-export default CarListField
+export default CarListField;

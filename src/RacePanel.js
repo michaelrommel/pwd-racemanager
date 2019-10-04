@@ -1,26 +1,26 @@
-import React, { Component } from 'react'
-import { Button, Intent } from '@blueprintjs/core'
-import { Flex, Box } from 'reflexbox'
-import RaceList from './RaceList'
-import RaceEditor from './RaceEditor'
-import RaceConductor from './RaceConductor'
+import React, { Component } from 'react';
+import { Button, Intent } from '@blueprintjs/core';
+import { Flex, Box } from 'reflexbox';
+import RaceList from './RaceList';
+import RaceEditor from './RaceEditor';
+import RaceConductor from './RaceConductor';
 
 class RacePanel extends Component {
   constructor (props) {
-    super(props)
+    super(props);
     this.state = {
-      'briefRaces': [],
-      'subPanel': 'racelist',
-      'raceToEdit': null
-    }
+      briefRaces: [],
+      subPanel: 'racelist',
+      raceToEdit: null
+    };
   }
 
   switchSubPanel = (panel) => {
-    this.setState({ 'subPanel': panel })
+    this.setState({ subPanel: panel });
   }
 
   switchToRacelist = () => {
-    this.switchSubPanel('racelist')
+    this.switchSubPanel('racelist');
   }
 
   openRaceInEditpanel = (id) => {
@@ -29,28 +29,28 @@ class RacePanel extends Component {
     // and propagated to the edit window. As soon as ....
     // is finished, the state is reset to null and the edit window
     // can function as new edit panel again
-    this.props.incrementRaceRefresh()
+    this.props.incrementRaceRefresh();
     this.setState({
-      'raceToEdit': id,
-      'subPanel': 'editrace'
-    })
+      raceToEdit: id,
+      subPanel: 'editrace'
+    });
   }
 
   openRaceInRunpanel = (id) => {
     this.setState({
-      'raceToEdit': id,
-      'subPanel': 'runrace'
-    })
+      raceToEdit: id,
+      subPanel: 'runrace'
+    });
   }
 
   subPanelStyle = (subPanelName) => {
     return (this.state.subPanel === subPanelName)
       ? {}
-      : { 'display': 'none' }
+      : { display: 'none' };
   }
 
   render () {
-    const panelActive = this.props.active ? {} : { 'display': 'none' }
+    const panelActive = this.props.active ? {} : { display: 'none' };
 
     return (
       <div className='racepanel' style={panelActive}>
@@ -118,8 +118,8 @@ class RacePanel extends Component {
           </Flex>
         </div>
       </div>
-    )
+    );
   }
 }
 
-export default RacePanel
+export default RacePanel;

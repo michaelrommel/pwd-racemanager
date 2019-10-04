@@ -1,33 +1,33 @@
-import React, { Component } from 'react'
-import { Button, Intent, H4, H5 } from '@blueprintjs/core'
-import { Flex, Box } from 'reflexbox'
-import memoizeOne from 'memoize-one'
-import axios from 'axios'
-import SimpleBar from 'simplebar-react'
-import DisplayToast from './DisplayToast'
-import Leaderboard from './Leaderboard'
+import React, { Component } from 'react';
+import { Button, Intent, H4, H5 } from '@blueprintjs/core';
+import { Flex, Box } from 'reflexbox';
+import memoizeOne from 'memoize-one';
+import axios from 'axios';
+import SimpleBar from 'simplebar-react';
+import DisplayToast from './DisplayToast';
+import Leaderboard from './Leaderboard';
 
-import 'simplebar/dist/simplebar.min.css'
+import 'simplebar/dist/simplebar.min.css';
 
 class RaceConductor extends Component {
   constructor (props) {
-    super(props)
+    super(props);
     this.state = {
-      'heats': []
-    }
+      heats: []
+    };
   }
 
   componentDidMount () {
-    console.log('RaceConductor: mounted.')
-    this.memoizeGetHeats(this.props.raceToRun, this.props.raceRefreshCounter)
+    console.log('RaceConductor: mounted.');
+    this.memoizeGetHeats(this.props.raceToRun, this.props.raceRefreshCounter);
   }
 
-  componentDidUpdate (prevProps, prevState, snapshot) {
-    console.log('RaceConductor::componentDidUpdate: state is', this.state)
-    this.memoizeGetHeats(this.props.raceToRun, this.props.raceRefreshCounter)
+  componentDidUpdate (prevProps) {
+    console.log('RaceConductor::componentDidUpdate: state is', this.state);
+    this.memoizeGetHeats(this.props.raceToRun, this.props.raceRefreshCounter);
     // checking if currentHeat number changed or the status changed,
     // trigger a new update
-    let mustRefresh = false
+    let mustRefresh = false;
     if (
       (this.props.displayProps !== undefined &&
       this.props.displayProps !== null &&
@@ -42,7 +42,7 @@ class RaceConductor extends Component {
       this.props.displayProps.currentHeat.status !==
       prevProps.displayProps.currentHeat.status)
     ) {
-      mustRefresh = true
+      mustRefresh = true;
     }
     if (
       (this.props.displayProps !== undefined &&
@@ -58,151 +58,151 @@ class RaceConductor extends Component {
       this.props.displayProps.nextHeat.status !==
       prevProps.displayProps.nextHeat.status)
     ) {
-      mustRefresh = true
+      mustRefresh = true;
     }
     if (mustRefresh) {
-      console.log('RaceConductor::CDU: heatnumber or status changed, refreshing')
-      this.getHeats(this.props.raceToRun)
+      console.log('RaceConductor::CDU: heatnumber or status changed, refreshing');
+      this.getHeats(this.props.raceToRun);
     }
   }
 
   memoizeGetHeats = memoizeOne(
     (p) => {
-      console.log('RaceConductor::memoizedGetHeats: submitted race is', p)
-      this.getHeats(this.props.raceToRun)
+      console.log('RaceConductor::memoizedGetHeats: submitted race is', p);
+      this.getHeats(this.props.raceToRun);
     }
   )
 
   getHeats = async (raceId) => {
-    console.log('RaceConductor::getHeats: getting heats from server')
-    let heats
+    console.log('RaceConductor::getHeats: getting heats from server');
+    let heats;
     if (raceId === null) {
       // not initialized yet, so return
-      return null
+      return null;
     } else {
       // try to get all heats for a race
       try {
         if (!this.props.user) {
-          console.log('RaceConductor::getHeats: not logged in, cannot get!')
-          throw (new Error('Not Logged In'))
+          console.log('RaceConductor::getHeats: not logged in, cannot get!');
+          throw (new Error('Not Logged In'));
         }
-        let config = {
-          headers: { 'Authorization': 'Bearer ' + this.props.user.token }
-        }
-        let response = await axios.get(
-          this.props.urlprefix + '/race/heats/' + raceId, config)
+        const config = {
+          headers: { Authorization: 'Bearer ' + this.props.user.token }
+        };
+        const response = await axios.get(
+          this.props.urlprefix + '/race/heats/' + raceId, config);
         // we got all heats for the race, is an array of objects
-        heats = response.data
+        heats = response.data;
       } catch (err) {
-        console.log('RaceConductor::getHeats: Error getting heats ', err)
-        return false
+        console.log('RaceConductor::getHeats: Error getting heats ', err);
+        return false;
       }
     }
     // store it in the state of this component
-    this.setState({ 'heats': heats })
+    this.setState({ heats: heats });
   }
 
   markNext = async (e) => {
-    console.log('RaceConductor::markNext: marking next heat')
-    let heatkey = e.currentTarget.id
+    console.log('RaceConductor::markNext: marking next heat');
+    let heatkey = e.currentTarget.id;
     if (heatkey === null) {
       // not initialized yet, so return
-      return null
+      return null;
     } else {
       // strip prefix
-      heatkey = heatkey.slice(5)
+      heatkey = heatkey.slice(5);
       try {
         if (!this.props.user) {
-          console.log('RaceConductor::markNext: not logged in, cannot mark!')
-          throw (new Error('Not Logged In'))
+          console.log('RaceConductor::markNext: not logged in, cannot mark!');
+          throw (new Error('Not Logged In'));
         }
-        let config = {
-          headers: { 'Authorization': 'Bearer ' + this.props.user.token }
-        }
-        let response = await axios.put(
-          this.props.urlprefix + '/heat/next/' + heatkey, {}, config)
+        const config = {
+          headers: { Authorization: 'Bearer ' + this.props.user.token }
+        };
+        const response = await axios.put(
+          this.props.urlprefix + '/heat/next/' + heatkey, {}, config);
         if (response) {
           this.showToast('Marked next heat', Intent.SUCCESS,
-            'tick-circle', 1000)
+            'tick-circle', 1000);
         } else {
           this.showToast('Error marking next heat', Intent.DANGER,
-            'warning sign', 3000)
+            'warning sign', 3000);
         }
         // trigger a refresh of the heats
-        this.props.updateCurrentNextHeat()
+        this.props.updateCurrentNextHeat();
       } catch (err) {
-        console.log('RaceConductor::markNext: Error marking next heat: ', err)
-        return false
+        console.log('RaceConductor::markNext: Error marking next heat: ', err);
+        return false;
       }
     }
   }
 
   initHeat = async (e) => {
-    console.log('RaceConductor::initHeat: initializing current heat')
-    let heatkey = e.currentTarget.id
+    console.log('RaceConductor::initHeat: initializing current heat');
+    let heatkey = e.currentTarget.id;
     if (heatkey === null) {
       // not initialized yet, so return
-      return null
+      return null;
     } else {
       // strip prefix
-      heatkey = heatkey.slice(5)
+      heatkey = heatkey.slice(5);
       try {
         if (!this.props.user) {
-          console.log('RaceConductor::initHeat: not logged in, cannot mark!')
-          throw (new Error('Not Logged In'))
+          console.log('RaceConductor::initHeat: not logged in, cannot mark!');
+          throw (new Error('Not Logged In'));
         }
-        let config = {
-          headers: { 'Authorization': 'Bearer ' + this.props.user.token }
-        }
-        let response = await axios.put(
-          this.props.urlprefix + '/heat/init/' + heatkey, {}, config)
+        const config = {
+          headers: { Authorization: 'Bearer ' + this.props.user.token }
+        };
+        const response = await axios.put(
+          this.props.urlprefix + '/heat/init/' + heatkey, {}, config);
         if (response) {
           this.showToast('Initialized current heat', Intent.SUCCESS,
-            'tick-circle', 1000)
+            'tick-circle', 1000);
         } else {
           this.showToast('Error initializing current heat', Intent.DANGER,
-            'warning sign', 3000)
+            'warning sign', 3000);
         }
         // trigger a refresh of the heats
-        this.props.updateCurrentNextHeat()
+        this.props.updateCurrentNextHeat();
       } catch (err) {
-        console.log('RaceConductor::initHeat: Error initializing current heat: ', err)
-        return false
+        console.log('RaceConductor::initHeat: Error initializing current heat: ', err);
+        return false;
       }
     }
   }
 
   startHeat = async (e) => {
-    console.log('RaceConductor::startHeat: initializing current heat')
-    let heatkey = e.currentTarget.id
+    console.log('RaceConductor::startHeat: initializing current heat');
+    let heatkey = e.currentTarget.id;
     if (heatkey === null) {
       // not initialized yet, so return
-      return null
+      return null;
     } else {
       // strip prefix
-      heatkey = heatkey.slice(6)
+      heatkey = heatkey.slice(6);
       try {
         if (!this.props.user) {
-          console.log('RaceConductor::startHeat: not logged in, cannot mark!')
-          throw (new Error('Not Logged In'))
+          console.log('RaceConductor::startHeat: not logged in, cannot mark!');
+          throw (new Error('Not Logged In'));
         }
-        let config = {
-          headers: { 'Authorization': 'Bearer ' + this.props.user.token }
-        }
-        let response = await axios.put(
-          this.props.urlprefix + '/heat/go/' + heatkey, {}, config)
+        const config = {
+          headers: { Authorization: 'Bearer ' + this.props.user.token }
+        };
+        const response = await axios.put(
+          this.props.urlprefix + '/heat/go/' + heatkey, {}, config);
         if (response) {
           this.showToast('Started current heat', Intent.SUCCESS,
-            'tick-circle', 1000)
+            'tick-circle', 1000);
         } else {
           this.showToast('Error starting current heat', Intent.DANGER,
-            'warning sign', 3000)
+            'warning sign', 3000);
         }
         // trigger a refresh of the heats
-        this.props.updateCurrentNextHeat()
+        this.props.updateCurrentNextHeat();
       } catch (err) {
-        console.log('RaceConductor::startHeat: Error starting current heat: ', err)
-        return false
+        console.log('RaceConductor::startHeat: Error starting current heat: ', err);
+        return false;
       }
     }
   }
@@ -211,44 +211,44 @@ class RaceConductor extends Component {
     try {
       if (await this.saveRace(values)) {
         this.showToast('Successfully saved the race',
-          Intent.SUCCESS, 'tick-circle', 2000)
+          Intent.SUCCESS, 'tick-circle', 2000);
       } else {
         this.showToast('Failed to save the race',
-          Intent.DANGER, 'warning-sign', 5000)
+          Intent.DANGER, 'warning-sign', 5000);
       }
-      actions.setSubmitting(false)
+      actions.setSubmitting(false);
     } catch (err) {
       this.showToast('Failed to submit the race',
-        Intent.DANGER, 'warning-sign', 5000)
-      actions.setSubmitting(false)
+        Intent.DANGER, 'warning-sign', 5000);
+      actions.setSubmitting(false);
     }
   }
 
   showToast = (msg, intent, icon, timeout) => {
     DisplayToast.show({
-      'message': msg,
-      'intent': intent,
-      'icon': icon,
-      'timeout': timeout
-    })
+      message: msg,
+      intent: intent,
+      icon: icon,
+      timeout: timeout
+    });
   }
 
   render () {
-    if (this.state.heats.length === 0) return null
+    if (this.state.heats.length === 0) return null;
 
     console.log('RaceConductor: rendering, with displayProps:',
-      JSON.stringify(this.props.displayProps, null, 0))
+      JSON.stringify(this.props.displayProps, null, 0));
     console.log('RaceConductor: rendering, with state:',
-      JSON.stringify(this.state.heats, null, 0))
+      JSON.stringify(this.state.heats, null, 0));
 
     const emptyLane = {
-      'ow': '-',
-      't': 0,
-      'score': 0
-    }
+      ow: '-',
+      t: 0,
+      score: 0
+    };
 
-          // <div className={'pwd-raceconductorcontainer'}>
-          //   <Flex w={1} column className={'pwd-raceconductor'}>
+    // <div className={'pwd-raceconductorcontainer'}>
+    //   <Flex w={1} column className={'pwd-raceconductor'}>
 
     return (
       <Flex w={1} p={1}>
@@ -264,27 +264,27 @@ class RaceConductor extends Component {
                       this.props.displayProps.currentHeat.heat === heat.heat) {
                       // the currently to be displayed row is more current in the
                       // displayprops, take values from there
-                      console.log('RaceConductor: Old current heat: ', heat)
-                      heat = { ...heat, ...this.props.displayProps.currentHeat }
-                      console.log('RaceConductor: New current heat: ', heat)
+                      console.log('RaceConductor: Old current heat: ', heat);
+                      heat = { ...heat, ...this.props.displayProps.currentHeat };
+                      console.log('RaceConductor: New current heat: ', heat);
                     } else if (this.props.displayProps !== undefined &&
                       this.props.displayProps.nextHeat !== undefined &&
                       this.props.displayProps.nextHeat.heat === heat.heat) {
                       // the currently to be displayed row is more current in the
                       // displayprops, take values from there
-                      console.log('RaceConductor: Old next heat: ', heat)
-                      heat = { ...heat, ...this.props.displayProps.nextHeat }
-                      console.log('RaceConductor: New next heat: ', heat)
+                      console.log('RaceConductor: Old next heat: ', heat);
+                      heat = { ...heat, ...this.props.displayProps.nextHeat };
+                      console.log('RaceConductor: New next heat: ', heat);
                     }
 
                     // add missing lane information for runs with cars < lanes
                     for (let i = 0; i < 4; i++) {
                       if (heat.results[i] === undefined) {
-                        heat.results[i] = { ...emptyLane }
+                        heat.results[i] = { ...emptyLane };
                       }
                     }
 
-                    console.log('Rendering heat: ', heat)
+                    console.log('Rendering heat: ', heat);
                     return (
                       <Box w={1} my={1} key={heat.heat} className={'pwd-heat'}>
                         <Flex w={1}>
@@ -342,7 +342,7 @@ class RaceConductor extends Component {
                           </Box>
                         </Flex>
                       </Box>
-                    )
+                    );
                   })}
                 </React.Fragment>
               </SimpleBar>
@@ -356,8 +356,8 @@ class RaceConductor extends Component {
           </div>
         </Box>
       </Flex>
-    )
+    );
   }
 }
 
-export default RaceConductor
+export default RaceConductor;

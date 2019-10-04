@@ -1,13 +1,13 @@
-import React, { Component } from 'react'
-import { H1, H4, Intent, Tag } from '@blueprintjs/core'
-import { Flex, Box } from 'reflexbox'
-import Leaderboard from './Leaderboard'
-import Highscore from './Highscore'
-import Heat from './Heat'
+import React, { Component } from 'react';
+import { H1, H4, Intent, Tag } from '@blueprintjs/core';
+import { Flex, Box } from 'reflexbox';
+import Leaderboard from './Leaderboard';
+import Highscore from './Highscore';
+import Heat from './Heat';
 
 class DisplayPanel extends Component {
   render () {
-    const panelActive = this.props.active ? {} : { 'display': 'none' }
+    const panelActive = this.props.active ? {} : { display: 'none' };
 
     return (
       <Flex className='display' style={panelActive}>
@@ -64,8 +64,8 @@ class DisplayPanel extends Component {
           </Flex>
         </Box>
       </Flex>
-    )
+    );
   }
 }
 
-export default DisplayPanel
+export default DisplayPanel;

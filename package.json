@@ -25,7 +25,7 @@
     "@blueprintjs/table": "^3.5.0",
     "@blueprintjs/timezone": "^3.4.0",
     "axios": "^0.18.0",
-    "formik": "^1.5.7",
+    "formik": "^1.5.8",
     "memoize-one": "^5.0.4",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
@@ -36,30 +36,14 @@
     "yup": "^0.27.0"
   },
   "devDependencies": {
-    "babel-eslint": "^10.0.1",
     "cross-env": "^5.2.0",
-    "standard": "^14.3.1",
-    "typescript": "^3.4.5"
-  },
-  "eslintConfig": {
-    "extends": "react-app"
-  },
-  "standard": {
-    "env": [
-      "mocha"
-    ],
-    "parser": "babel-eslint",
-    "globals": [
-      "describe",
-      "context",
-      "before",
-      "beforeEach",
-      "after",
-      "afterEach",
-      "it",
-      "expect",
-      "fetch"
-    ]
+    "eslint": "^6.5.1",
+    "eslint-config-standard": "^14.1.0",
+    "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-node": "^10.0.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.1",
+    "typescript": "^3.6.3"
   },
   "browserslist": [
     ">0.2%",

@@ -1,21 +1,21 @@
-import React from 'react'
-import { Tag, Intent, Card, Elevation } from '@blueprintjs/core'
-import { Flex, Box } from 'reflexbox'
-import { getCodeForName } from './iso3166.js'
+import React from 'react';
+import { Tag, Intent, Card, Elevation } from '@blueprintjs/core';
+import { Flex, Box } from 'reflexbox';
+import { getCodeForName } from './iso3166.js';
 
 function CarCardList (props) {
-  const cars = props.cars
+  const cars = props.cars;
   if (cars === undefined ||
     cars === null ||
     cars.length === 0
-  ) return null
+  ) return null;
 
-  let tags
+  let tags;
 
   return (
     <React.Fragment>
       {cars.map((car) => {
-        let code = getCodeForName(car[2])
+        const code = getCodeForName(car[2]);
         if (car[3]) {
           tags = car[3].map(
             (tag) => <Tag
@@ -23,9 +23,9 @@ function CarCardList (props) {
               round
               intent={Intent.PRIMARY}
               className={'pwd-racetag'}
-            >{tag}</Tag>)
+            >{tag}</Tag>);
         } else {
-          tags = ''
+          tags = '';
         }
         return (
           <Box p={1} w={props.columns === 2 ? 1 / 2 : 1 / 3} key={car[0]}>
@@ -46,10 +46,10 @@ function CarCardList (props) {
               </Flex>
             </Card>
           </Box>
-        )
+        );
       })}
     </React.Fragment>
-  )
+  );
 }
 
-export default CarCardList
+export default CarCardList;

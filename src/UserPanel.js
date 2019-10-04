@@ -1,21 +1,21 @@
-import React, { Component } from 'react'
-import { H3 } from '@blueprintjs/core'
-import { Flex, Box } from 'reflexbox'
+import React, { Component } from 'react';
+import { H3 } from '@blueprintjs/core';
+import { Flex, Box } from 'reflexbox';
 
 class UserPanel extends Component {
   constructor (props) {
-    super(props)
+    super(props);
     this.state = {
-    }
-    this.handleClick = this.handleClick.bind(this)
+    };
+    this.handleClick = this.handleClick.bind(this);
   }
 
   handleClick = (e) => {
-    this.setState({ 'xxx': e.target.value })
+    this.setState({ xxx: e.target.value });
   }
 
   render () {
-    const panelActive = this.props.active ? {} : { 'display': 'none' }
+    const panelActive = this.props.active ? {} : { display: 'none' };
 
     return (
       <Flex className='userpanel' style={panelActive}>
@@ -26,8 +26,8 @@ class UserPanel extends Component {
           </p>
         </Box>
       </Flex>
-    )
+    );
   }
 }
 
-export default UserPanel
+export default UserPanel;

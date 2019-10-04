@@ -1,14 +1,14 @@
-import React, { Component } from 'react'
-import { Icon, TagInput, FormGroup, Button, Intent } from '@blueprintjs/core'
-import { Formik, Form } from 'formik'
-import { Flex, Box } from 'reflexbox'
-import * as Yup from 'yup'
-import memoizeOne from 'memoize-one'
-import axios from 'axios'
-import FormikValidator from './FormikValidator'
-import FieldWithError from './FieldWithError.js'
-import DisplayToast from './DisplayToast'
-import CarList from './CarList'
+import React, { Component } from 'react';
+import { Icon, TagInput, FormGroup, Button, Intent } from '@blueprintjs/core';
+import { Formik, Form } from 'formik';
+import { Flex, Box } from 'reflexbox';
+import * as Yup from 'yup';
+import memoizeOne from 'memoize-one';
+import axios from 'axios';
+import FormikValidator from './FormikValidator';
+import FieldWithError from './FieldWithError.js';
+import DisplayToast from './DisplayToast';
+import CarList from './CarList';
 
 const getValidationSchema = () => {
   return (
@@ -27,11 +27,11 @@ const getValidationSchema = () => {
       sn: Yup.number()
         .required('Required')
     })
-  )
-}
+  );
+};
 
 const CarForm = (props) => {
-  let {
+  const {
     isSubmitting,
     handleSubmit,
     handleReset,
@@ -45,39 +45,39 @@ const CarForm = (props) => {
     user,
     scaleIp,
     openCarInEditpanel
-  } = props
+  } = props;
 
   const showToast = (msg, intent, icon, timeout) => {
     DisplayToast.show({
-      'message': msg,
-      'intent': intent,
-      'icon': icon,
-      'timeout': timeout
-    })
-  }
+      message: msg,
+      intent: intent,
+      icon: icon,
+      timeout: timeout
+    });
+  };
 
   const handleTagChange = (tags) => {
-    setFieldValue('races', tags)
-    setFieldValue('racesInput', '')
-  }
+    setFieldValue('races', tags);
+    setFieldValue('racesInput', '');
+  };
 
   const handleGetCar = async () => {
     try {
-      let config = {
-        headers: { 'Authorization': 'Bearer ' + user.token }
-      }
-      let response = await axios.get(
-        'http://' + scaleIp + ':1337/info', config)
-      setFieldValue('rf', response.data.rfid)
-      setFieldValue('weight', response.data.weight)
+      const config = {
+        headers: { Authorization: 'Bearer ' + user.token }
+      };
+      const response = await axios.get(
+        'http://' + scaleIp + ':1337/info', config);
+      setFieldValue('rf', response.data.rfid);
+      setFieldValue('weight', response.data.weight);
     } catch (err) {
-      console.log('CarPanel: Could not get car details from scale!')
+      console.log('CarPanel: Could not get car details from scale!');
       showToast('Could not connect to scale!', Intent.DANGER,
-        'warning-sign', 5000)
+        'warning-sign', 5000);
     }
-  }
+  };
 
-  const handleTagClear = () => handleTagChange([])
+  const handleTagClear = () => handleTagChange([]);
 
   const clearButton = (
     <Button
@@ -85,11 +85,11 @@ const CarForm = (props) => {
       minimal
       onClick={handleTagClear}
     />
-  )
+  );
 
   const handleClear = () => {
-    openCarInEditpanel(null)
-  }
+    openCarInEditpanel(null);
+  };
 
   return (
     <Form>
@@ -201,7 +201,7 @@ const CarForm = (props) => {
               addOnPaste
               placeholder={'2019-Demo'}
               rightElement={clearButton}
-              inputProps={{ 'id': 'racesInput' }}
+              inputProps={{ id: 'racesInput' }}
               onInputChange={handleChange}
               inputValue={values.racesInput}
               id={'races'}
@@ -245,73 +245,73 @@ const CarForm = (props) => {
         </Box>
       </Flex>
     </Form>
-  )
-}
+  );
+};
 
 class EditCarForm extends Component {
   constructor (props) {
-    super(props)
+    super(props);
     this.defaultState = {
-      'rf': '',
-      'weight': 0,
-      'ow': '',
-      'name': '',
-      'country': '',
-      'races': ['2019-Quali'],
-      'mn': '201906261',
-      'sn': '',
-      'racesInput': '',
-      'newcar': true
-    }
-    this.state = this.defaultState
+      rf: '',
+      weight: 0,
+      ow: '',
+      name: '',
+      country: '',
+      races: ['2019-Quali'],
+      mn: '201906261',
+      sn: '',
+      racesInput: '',
+      newcar: true
+    };
+    this.state = this.defaultState;
   }
 
   componentDidMount () {
-    console.log('EditCarForm: mounted.')
-    this.memoizeGetCar(this.props.carToEdit)
+    console.log('EditCarForm: mounted.');
+    this.memoizeGetCar(this.props.carToEdit);
   }
 
   componentDidUpdate () {
-    console.log('EditCarForm: updated')
-    this.memoizeGetCar(this.props.carToEdit, this.props.editFormTrigger)
-    console.log('EditCarForm::componentDidUpdate: state is', this.state)
+    console.log('EditCarForm: updated');
+    this.memoizeGetCar(this.props.carToEdit, this.props.editFormTrigger);
+    console.log('EditCarForm::componentDidUpdate: state is', this.state);
   }
 
   memoizeGetCar = memoizeOne(
     (p) => {
-      console.log('EditCarForm::memoizedGetCar: submitted prop is', p)
-      this.editCar(this.props.carToEdit)
+      console.log('EditCarForm::memoizedGetCar: submitted prop is', p);
+      this.editCar(this.props.carToEdit);
     }
   )
 
   editCar = async (rfid) => {
-    console.log('EditCarForm::editCar: getting car from server')
+    console.log('EditCarForm::editCar: getting car from server');
     if (rfid === null) {
       // this is a request to clear the form
       this.setState({
         ...this.defaultState,
-        'editFormTrigger': this.props.editFormTrigger
-      })
+        editFormTrigger: this.props.editFormTrigger
+      });
     } else {
       // try to get a car to edit
       try {
         if (!this.props.user) {
-          console.log('EditCarForm::editCar: not logged in, cannot get!')
-          throw (new Error('Not Logged In'))
+          console.log('EditCarForm::editCar: not logged in, cannot get!');
+          throw (new Error('Not Logged In'));
         }
-        let config = {
-          headers: { 'Authorization': 'Bearer ' + this.props.user.token }
-        }
-        let response = await axios.get(
-          this.props.urlprefix + '/car/' + rfid, config)
+        const config = {
+          headers: { Authorization: 'Bearer ' + this.props.user.token }
+        };
+        const response = await axios.get(
+          this.props.urlprefix + '/car/' + rfid, config);
         // we got one car object in response.data
-        let car = response.data
-        car['newcar'] = false
-        this.setState(car)
-        return true
+        const car = response.data;
+        car.newcar = false;
+        this.setState(car);
+        return true;
       } catch (err) {
-        console.log('EditCarForm::editCar: error getting car: ', err)
-        return false
+        console.log('EditCarForm::editCar: error getting car: ', err);
+        return false;
       }
     }
   }
@@ -319,31 +319,31 @@ class EditCarForm extends Component {
   async saveCar (car) {
     try {
       if (!this.props.user) {
-        console.log('EditCarForm::saveCar: not logged in, cannot save!')
-        throw (new Error('Not Logged In'))
+        console.log('EditCarForm::saveCar: not logged in, cannot save!');
+        throw (new Error('Not Logged In'));
       }
-      console.log('EditCarForm::saveCar: saving a car: ' + car)
-      let config = {
-        headers: { 'Authorization': 'Bearer ' + this.props.user.token }
-      }
+      console.log('EditCarForm::saveCar: saving a car: ' + car);
+      const config = {
+        headers: { Authorization: 'Bearer ' + this.props.user.token }
+      };
       // remove the input field from the values
-      delete car.racesInput
-      let response
+      delete car.racesInput;
+      let response;
       if (this.state.newcar) {
         response = await axios.post(
-          this.props.urlprefix + '/car/' + car.rf, car, config)
+          this.props.urlprefix + '/car/' + car.rf, car, config);
       } else {
         response = await axios.put(
-          this.props.urlprefix + '/car/' + car.rf, car, config)
+          this.props.urlprefix + '/car/' + car.rf, car, config);
       }
-      console.log('EditCarForm::saveCar: stored car:', response)
+      console.log('EditCarForm::saveCar: stored car:', response);
       if (response.data.success) {
         // success storing the new settings
       }
-      return true
+      return true;
     } catch (err) {
-      console.log('EditCarForm::saveCar: error storing application settings: ', err)
-      return false
+      console.log('EditCarForm::saveCar: error storing application settings: ', err);
+      return false;
     }
   }
 
@@ -351,31 +351,31 @@ class EditCarForm extends Component {
     try {
       if (await this.saveCar(values)) {
         this.showToast('Successfully saved the car',
-          Intent.SUCCESS, 'tick-circle', 2000)
-        this.props.toggleCarlistRefresh()
+          Intent.SUCCESS, 'tick-circle', 2000);
+        this.props.toggleCarlistRefresh();
       } else {
         this.showToast('Failed to save the car',
-          Intent.DANGER, 'warning-sign', 5000)
+          Intent.DANGER, 'warning-sign', 5000);
       }
-      actions.setSubmitting(false)
+      actions.setSubmitting(false);
     } catch (err) {
       this.showToast('Failed to submit the car',
-        Intent.DANGER, 'warning-sign', 5000)
-      actions.setSubmitting(false)
+        Intent.DANGER, 'warning-sign', 5000);
+      actions.setSubmitting(false);
     }
   }
 
   showToast = (msg, intent, icon, timeout) => {
     DisplayToast.show({
-      'message': msg,
-      'intent': intent,
-      'icon': icon,
-      'timeout': timeout
-    })
+      message: msg,
+      intent: intent,
+      icon: icon,
+      timeout: timeout
+    });
   }
 
   render () {
-    const initialValues = this.state
+    const initialValues = this.state;
 
     return (
       <Formik
@@ -389,28 +389,28 @@ class EditCarForm extends Component {
             {...this.props} />
         }
       />
-    )
+    );
   }
 }
 
 class CarPanel extends Component {
   constructor (props) {
-    super(props)
+    super(props);
     this.state = {
-      'editIsOpen': false,
-      'refreshToggle': false,
-      'carToEdit': null,
-      'editFormTrigger': 0
-    }
+      editIsOpen: false,
+      refreshToggle: false,
+      carToEdit: null,
+      editFormTrigger: 0
+    };
   }
 
   toggleCarlistRefresh = () => {
-    this.setState({ 'refreshToggle': !this.state.refreshToggle })
-    this.props.incrementRaceRefresh()
+    this.setState({ refreshToggle: !this.state.refreshToggle });
+    this.props.incrementRaceRefresh();
   }
 
   openCarEditPanel = () => {
-    this.setState({ 'editIsOpen': !this.state.editIsOpen })
+    this.setState({ editIsOpen: !this.state.editIsOpen });
   }
 
   openCarInEditpanel = (rfid) => {
@@ -422,16 +422,16 @@ class CarPanel extends Component {
     if (this.state.carToEdit === null && rfid === null) {
       // we had a new, empty careditor, but are asked to clear the form
       // again, increase trigger, so that the form is refreshed
-      let newtrigger = this.state.editFormTrigger + 1
-      this.setState({ 'editFormTrigger': newtrigger })
+      const newtrigger = this.state.editFormTrigger + 1;
+      this.setState({ editFormTrigger: newtrigger });
     } else {
-      this.setState({ 'carToEdit': rfid })
+      this.setState({ carToEdit: rfid });
     }
   }
 
   render () {
-    const panelActive = this.props.active ? {} : { 'display': 'none' }
-    const drawerStyle = this.state.editIsOpen ? {} : { 'display': 'none' }
+    const panelActive = this.props.active ? {} : { display: 'none' };
+    const drawerStyle = this.state.editIsOpen ? {} : { display: 'none' };
 
     return (
       <div className='carpanel' style={panelActive}>
@@ -477,8 +477,8 @@ class CarPanel extends Component {
           </Box>
         </Flex>
       </div>
-    )
+    );
   }
 }
 
-export default CarPanel
+export default CarPanel;

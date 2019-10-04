@@ -1,16 +1,16 @@
-import React, { Component } from 'react'
-import { HTMLTable } from '@blueprintjs/core'
+import React, { Component } from 'react';
+import { HTMLTable } from '@blueprintjs/core';
 
 function Highscorerows (props) {
-  const scores = props.highscore
+  const scores = props.highscore;
   if (scores === undefined ||
     scores === null ||
     scores.length === 0
-  ) return null
+  ) return null;
 
   return (
     <React.Fragment>
-      {scores.map((scores, i) =>
+      {scores.map((scores) =>
         <tr key={scores.rank}>
           <td>{scores.rank}</td>
           <td>{scores.ow}</td>
@@ -19,7 +19,7 @@ function Highscorerows (props) {
         </tr>
       )}
     </React.Fragment>
-  )
+  );
 }
 
 class Highscore extends Component {
@@ -37,8 +37,8 @@ class Highscore extends Component {
           </tbody>
         </HTMLTable>
       </React.Fragment>
-    )
+    );
   }
 }
 
-export default Highscore
+export default Highscore;
