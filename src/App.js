@@ -84,7 +84,7 @@ class App extends Component {
   }
 
   changeTheme = () => {
-    this.setState((state, props) => ({
+    this.setState((state) => ({
       darktheme: !state.darktheme
     }));
   }
