@@ -24,7 +24,7 @@
     "@blueprintjs/select": "^3.8.0",
     "@blueprintjs/table": "^3.5.0",
     "@blueprintjs/timezone": "^3.4.0",
-    "axios": "^0.18.0",
+    "axios": "^0.21.1",
     "formik": "^1.5.8",
     "memoize-one": "^5.0.4",
     "react": "^16.8.6",
